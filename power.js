@@ -143,24 +143,6 @@ function labels() {
 		}
 	});
 	map.addLayer({
-		"id": "plant label",
-		"type": "symbol",
-		"source": "power",
-		"source-layer": "power",
-		"filter": [
-			"all",
-			["in", "kind", "plant"],
-		],
-		"minzoom": 4,
-		"layout": {
-			'icon-image': 'circle-stroked-11',
-			'icon-size': {
-				"stops": [[5, 0], [6, 1]]
-			},
-			'icon-allow-overlap': true
-		}
-	});
-	map.addLayer({
 		"id": "power label",
 		"type": "symbol",
 		"source": "power",
@@ -222,42 +204,22 @@ getDocument = function(url, callback) {
 };
 
 function generators() {
-	return;
-	getDocument('ercot_gen.php', function(error, data) {
-		var geojson = toGeoJSON.kml(data);
-		map.addSource('ercot_gen', {
-			'type': 'geojson',
-			'data': geojson
-		});
-
-		map.addLayer({
-			"id": "ercot_gen",
-			"type": "symbol",
-			"source": "ercot_gen",
-			"layout": {
-				'icon-image': 'circle-stroked-11',
-				'icon-size': {
-					"stops": [[5, 0], [6, 1]]
-				},
-				'icon-allow-overlap': true
-			}
-		},"poi-scalerank2");
-
-		map.on('click', function (e) {
-			var features = map.queryRenderedFeatures(e.point, { layers: ['ercot_gen'] });
-
-			if (!features.length) {
-				return;
-			}
-
-			var feature = features[0];
-
-			// Populate the popup and set its coordinates
-			// based on the feature found.
-			var popup = new mapboxgl.Popup()
-				.setLngLat(feature.geometry.coordinates)
-				.setHTML(feature.properties.description)
-				.addTo(map);
-		});
+	map.addLayer({
+		"id": "plant label",
+		"type": "symbol",
+		"source": "power",
+		"source-layer": "power",
+		"filter": [
+			"all",
+			["in", "kind", "plant"],
+		],
+		"minzoom": 4,
+		"layout": {
+			'icon-image': 'circle-stroked-11',
+			'icon-size': {
+				"stops": [[5, 0], [6, 1]]
+			},
+			'icon-allow-overlap': true
+		}
 	});
 }
