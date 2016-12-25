@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='utf-8' />
+	<title></title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.js'></script>
+	<script src='togeojson.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.css' rel='stylesheet' />
+	<style>
+		body { margin:0; padding:0; }
+		#map { position:absolute; top:0; bottom:0; width:100%; }
+	</style>
+</head>
+<body>
+<style>
+.map {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+}
+</style>
+<div id='map' class='map'></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoia3JlM2QiLCJhIjoiY2lwcjJrZ3p2MDZyOWZvbTN0bXV1eXF6ZiJ9.xXv_HMXLK04bEtmuwsEyMQ';
+var map = new mapboxgl.Map({
+	container: 'map',
+	style: 'mapbox://styles/mapbox/satellite-streets-v10',
+	hash: true,
+	center: [-98.34, 30.55],
+	zoom: 6
+});
+
+var power_colors = {
+	'HVDC': '#882E72',
+
+	'800000': '#F7EE55',
+	'765000': '#F7EE55',
+	'750000': '#F7EE55',
+	'735000': '#F7EE55',
+
+	'500000': '#B178A6',
+
+	'450000': '#CAE0AB',
+	'440000': '#CAE0AB',
+	'420000': '#CAE0AB',
+	'400000': '#CAE0AB',
+	'380000': '#CAE0AB',
+	'360000': '#CAE0AB',
+
+	'345000': '#DC050C',
+
+	'350000': '#E8601C',
+	'315000': '#E8601C',
+	'287000': '#E8601C',
+	'275000': '#E8601C',
+
+	'240000': '#F1932D',
+	'230000': '#F1932D',
+	'225000': '#F1932D',
+
+	'220000': '#F6C141',
+
+	'161000': '#5289C7',
+	'150000': '#5289C7',
+	'144000': '#5289C7',
+
+	'138000': '#1965B0',
+
+	'132000': '#7BAFDE',
+	'125000': '#7BAFDE',
+	'120000': '#7BAFDE',
+	'115000': '#7BAFDE',
+	'113000': '#7BAFDE',
+	'110000': '#7BAFDE',
+	'100000': '#7BAFDE',
+	'90000': '#7BAFDE',
+
+	'69000': '#4EB265',
+
+	'72000': '#90C987',
+	'66000': '#90C987',
+	'55000': '#90C987',
+	'46000': '#90C987'
+}
+
+map.on('style.load', function () {
+	map.addSource('power', {
+		type: 'vector',
+		tiles: ["https://nhts.kreed.org/vt/all/{z}/{x}/{y}.mvt"],
+		minzoom: 0,
+		maxzoom: 16
+	});
+	map.addLayer({
+		"id": "power line case",
+		"type": "line",
+		"source": "power",
+		"source-layer": "power",
+		"interactive": true,
+		"filter": [
+			"all",
+			["==", "kind", "powerline"],
+			["!=", "line", "distribution"]
+		],
+		"paint": {
+			"line-width": 7
+		}
+	},"poi-scalerank2");
+
+	var combos = ['345000;138000', '138000;69000', '230000;115000', '345000;230000', '345000;161000', '345000;115000', '380000;110000', '380000;220000', '380000;220000;110000', '400000;220000', '400000;275000', '400000;150000', '400000;110000', '400000;225000', '500000;230000', '500000;115000', '230000;138000', '115000;69000'];
+	var primary = {
+		"type": "line",
+		"source": "power",
+		"source-layer": "power",
+		"interactive": true,
+		"filter": [
+			"all",
+			["==", "kind", "powerline"],
+			["in", "voltage"].concat(combos),
+		],
+		"paint": {
+			"line-width": 3,
+			"line-color": {
+				"property": "voltage",
+				"type": "categorical"
+			}
+		}
+	};
+	var secondary = JSON.parse(JSON.stringify(primary));
+	var primary_stops = [['unknown', '#fff']];
+	var secondary_stops = [['unknown', '#fff']];
+	for (var i = 0; i < combos.length; ++i) {
+		var voltages = combos[i].split(';');
+		if (!power_colors.hasOwnProperty(voltages[0])) console.log('missing', voltages[0]);
+		if (!power_colors.hasOwnProperty(voltages[1])) console.log('missing', voltages[1]);
+		primary_stops.push([combos[i], power_colors[voltages[0]]]);
+		secondary_stops.push([combos[i], power_colors[voltages[1]]]);
+	}
+	primary.id = 'powerline primary';
+	primary.paint['line-color'].stops = primary_stops;
+	primary.paint['line-dasharray'] = [2, 2];
+	secondary.id = 'powerline secondary';
+	secondary.paint['line-color'].stops = secondary_stops;
+	secondary.paint['line-dasharray'] = [0, 2, 2];
+	map.addLayer(primary,"poi-scalerank2");
+	map.addLayer(secondary,"poi-scalerank2");
+
+	var linestyle = {
+		"id": "power line",
+		"type": "line",
+		"source": "power",
+		"source-layer": "power",
+		"interactive": true,
+		"filter": [
+			"all",
+			["==", "kind", "powerline"],
+			["has", "voltage"],
+			["!in", "voltage"].concat(combos),
+			["!=", "frequency", "0"],
+			["!=", "line", "distribution"]
+		],
+		"paint": {
+			"line-width": 3,
+			"line-color": {
+				"property": "voltage",
+				"type": "categorical"
+			}
+		}
+	};
+	var stops = [];
+	stops.push(['unknown', '#fff'])
+	for (var e in power_colors) {
+		stops.push([e, power_colors[e]]);
+	}
+	linestyle.paint['line-color'].stops = stops;
+	map.addLayer(linestyle,"poi-scalerank2");
+
+	map.addLayer({
+		"id": "hvdc",
+		"type": "line",
+		"source": "power",
+		"source-layer": "power",
+		"interactive": true,
+		"filter": [
+			"all",
+			["==", "kind", "powerline"],
+			["has", "voltage"],
+			["==", "frequency", "0"],
+			["!=", "line", "distribution"]
+		],
+		"paint": {
+			"line-width": 3,
+			"line-color": power_colors['HVDC']
+		}
+	},"poi-scalerank2");
+
+	map.addSource('esri', {
+		type: 'raster',
+		tiles: ["http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+		maxzoom: 18,
+		attribution: '&copy; ESRI',
+		tileSize: 256
+	});
+
+	map.addLayer({
+		"id": "esri",
+		"type": "raster",
+		"source": "esri",
+	}, 'mapbox-mapbox-satellite');
+	map.removeLayer('mapbox-mapbox-satellite');
+
+	map.addSource('ercot_bound', {
+		'type': 'geojson',
+		'data': 'ercot_bound.geojson'
+	});
+	map.addLayer({
+		"id": "ercot_bound",
+		"type": "line",
+		"source": "ercot_bound",
+		"paint": {
+			"line-color": "#888",
+			"line-width": 2,
+		}
+	},"poi-scalerank2");
+
+	map.addLayer({
+		"id": "powerline label",
+		"type": "symbol",
+		"source": "power",
+		"source-layer": "power",
+		"filter": [
+			"all",
+			["==", "kind", "powerline"],
+			["!=", "line", "distribution"]
+		],
+		"minzoom": 12,
+		"layout": {
+			"text-size": {
+				"base": 1,
+				"stops": [[9,10], [20, 16]]
+			},
+			"text-max-angle": 30,
+			"symbol-spacing": 250,
+			"text-font": [
+				"DIN Offc Pro Medium",
+				"Arial Unicode MS Regular"
+			],
+			"symbol-placement": "line",
+			"text-padding": 1,
+			"text-offset": [0,0],
+			"text-rotation-alignment": "map",
+			"text-anchor": "bottom",
+			"text-field": "{voltage} ({cables})"
+		},
+		"paint": {
+			"text-color": "#fff",
+			"text-halo-color": {
+				"base": 1,
+				"stops": [[8,"hsl(0, 1%, 10%)"],[16,"hsl(0, 2%, 16%)"]]
+			},
+			"text-halo-width": {
+				"base": 1,
+				"stops": [[14,1.25],[15,1.5]]
+			},
+			"text-halo-blur": 0,
+			"text-translate": [0,-2]
+		}
+	});
+	map.addLayer({
+		"id": "power label",
+		"type": "symbol",
+		"source": "power",
+		"source-layer": "power",
+		"filter": [
+			"all",
+			["in", "kind", "substation", "plant"],
+		],
+		"minzoom": 10,
+		"layout": {
+			"text-line-height": 1,
+			"text-size": {
+				"base": 1,
+				"stops": [[12,11],[16,16]]
+			},
+			"symbol-avoid-edges": true,
+			"text-transform": "uppercase",
+			"text-font": [
+				"DIN Offc Pro Medium",
+				"Arial Unicode MS Regular"
+			],
+			"symbol-placement": "point",
+			"text-padding": 3,
+			"text-field": "{name}",
+			"text-letter-spacing": 0.1,
+			"text-max-width": 7
+		},
+		"paint": {
+			"text-halo-color": {
+				"base": 1,
+				"stops": [[9,"hsl(0, 0%, 18%)"],[16,"hsl(0, 2%, 14%)"]]
+			},
+			"text-halo-blur": 0.5,
+			"text-color": "hsl(35, 100%, 100%)",
+			"text-halo-width": 1
+		}
+	});
+});
+
+getDocument = function(url, callback) {
+	const xhr = new window.XMLHttpRequest();
+	xhr.open('GET', url, true);
+	xhr.responseType = 'document';
+	xhr.onerror = function(e) {
+		callback(e);
+	};
+	xhr.onload = function() {
+		if (xhr.response.byteLength === 0 && xhr.status === 200) {
+			return callback(new Error('http status 200 returned without content.'));
+		}
+		if (xhr.status >= 200 && xhr.status < 300 && xhr.response) {
+			callback(null, xhr.response);
+		} else {
+			callback(new Error(xhr.statusText));
+		}
+	};
+	xhr.send();
+	return xhr;
+};
+
+getDocument('ercot_gen.php', function(error, data) {
+	var geojson = toGeoJSON.kml(data);
+	map.addSource('ercot_gen', {
+		'type': 'geojson',
+		'data': geojson
+	});
+
+	map.addLayer({
+		"id": "ercot_gen",
+		"type": "symbol",
+		"source": "ercot_gen",
+		"layout": {
+			'icon-image': 'circle-stroked-11',
+			'icon-size': {
+				"stops": [[5, 0], [6, 1]]
+			},
+			'icon-allow-overlap': true
+		}
+	},"poi-scalerank2");
+
+	map.on('click', function (e) {
+		var features = map.queryRenderedFeatures(e.point, { layers: ['ercot_gen'] });
+
+		if (!features.length) {
+			return;
+		}
+
+		var feature = features[0];
+
+		// Populate the popup and set its coordinates
+		// based on the feature found.
+		var popup = new mapboxgl.Popup()
+			.setLngLat(feature.geometry.coordinates)
+			.setHTML(feature.properties.description)
+			.addTo(map);
+	});
+});
+</script>
+
+</body>
+</html>

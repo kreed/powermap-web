@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='utf-8' />
+	<title></title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.js'></script>
+	<script src='togeojson.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.css' rel='stylesheet' />
+	<style>
+		body { margin:0; padding:0; }
+		#map { position:absolute; top:0; bottom:0; width:100%; }
+	</style>
+</head>
+<body>
+<style>
+.map {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+}
+</style>
+<div id='map' class='map'></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoia3JlM2QiLCJhIjoiY2lwcjJrZ3p2MDZyOWZvbTN0bXV1eXF6ZiJ9.xXv_HMXLK04bEtmuwsEyMQ';
+var map = new mapboxgl.Map({
+	container: 'map',
+	style: 'mapbox://styles/kre3d/cipcex894001ebonffcm5yolf',
+	center: [0, 0],
+	zoom: 0
+});
+
+map.on('style.load', function () {
+	map.removeSource('composite');
+	map.addSource('composite', {
+		"url": "mapbox://mapbox.mapbox-streets-v7,kre3d.do0jz1kb",
+		"type": "vector"
+	});
+
+	map.addSource('esri', {
+		type: 'raster',
+		tiles: ["http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+		maxzoom: 18,
+		attribution: '&copy; ESRI',
+		tileSize: 256
+	});
+
+	map.addLayer({
+		"id": "esri",
+		"type": "raster",
+		"source": "esri",
+	}, 'mapbox-mapbox-satellite');
+	map.removeLayer('mapbox-mapbox-satellite');
+
+	map.addSource('ercot_bound', {
+		'type': 'geojson',
+		'data': 'ercot_bound.geojson'
+	});
+	map.addLayer({
+		"id": "ercot_bound",
+		"type": "line",
+		"source": "ercot_bound",
+		"paint": {
+			"line-color": "#888",
+			"line-width": 2,
+		}
+	});
+});
+
+getDocument = function(url, callback) {
+	const xhr = new window.XMLHttpRequest();
+	xhr.open('GET', url, true);
+	xhr.responseType = 'document';
+	xhr.onerror = function(e) {
+		callback(e);
+	};
+	xhr.onload = function() {
+		if (xhr.response.byteLength === 0 && xhr.status === 200) {
+			return callback(new Error('http status 200 returned without content.'));
+		}
+		if (xhr.status >= 200 && xhr.status < 300 && xhr.response) {
+			callback(null, xhr.response);
+		} else {
+			callback(new Error(xhr.statusText));
+		}
+	};
+	xhr.send();
+	return xhr;
+};
+
+getDocument('ercot_gen.php', function(error, data) {
+	var geojson = toGeoJSON.kml(data);
+	map.addSource('ercot_gen', {
+		'type': 'geojson',
+		'data': geojson
+	});
+
+	map.addLayer({
+		"id": "ercot_gen",
+		"type": "symbol",
+		"source": "ercot_gen",
+		"layout": {
+			'icon-image': 'circle-stroked-11',
+			'icon-allow-overlap': true
+		}
+	});
+
+	map.on('click', function (e) {
+		var features = map.queryRenderedFeatures(e.point, { layers: ['ercot_gen'] });
+
+		if (!features.length) {
+			return;
+		}
+
+		var feature = features[0];
+
+		// Populate the popup and set its coordinates
+		// based on the feature found.
+		var popup = new mapboxgl.Popup()
+			.setLngLat(feature.geometry.coordinates)
+			.setHTML(feature.properties.description)
+			.addTo(map);
+	});
+});
+
+</script>
+
+</body>
+</html>
