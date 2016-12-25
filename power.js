@@ -69,7 +69,7 @@ var voltage_combos = [
 function esri_imagery() {
 	map.addSource('esri', {
 		type: 'raster',
-		tiles: ["http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+		tiles: ["//server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
 		maxzoom: 18,
 		attribution: '&copy; ESRI',
 		tileSize: 256
