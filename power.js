@@ -131,14 +131,11 @@ function labels() {
 			"text-field": "{voltage} ({cables})"
 		},
 		"paint": {
-			"text-color": "#fff",
-			"text-halo-color": {
-				"base": 1,
-				"stops": [[8,"hsl(0, 1%, 10%)"],[16,"hsl(0, 2%, 16%)"]]
-			},
+			"text-halo-color": "#fff",
+			"text-color": "hsl(0, 1%, 34%)",
 			"text-halo-width": {
-				"base": 1,
-				"stops": [[14,1.25],[15,1.5]]
+				 "base": 1,
+				 "stops": [[14,1.25],[15,1.5]]
 			},
 			"text-halo-blur": 0,
 			"text-translate": [0,-2]
@@ -152,6 +149,7 @@ function labels() {
 		"filter": [
 			"all",
 			["in", "kind", "substation"],
+			["==", "label_placement", true],
 		],
 		"minzoom": 10,
 		"layout": {
@@ -173,13 +171,14 @@ function labels() {
 			"text-max-width": 7
 		},
 		"paint": {
-			"text-halo-color": {
-				"base": 1,
-				"stops": [[9,"hsl(0, 0%, 18%)"],[16,"hsl(0, 2%, 14%)"]]
+			"text-halo-color": "#fff",
+			"text-color": "hsl(0, 1%, 34%)",
+			"text-halo-width": {
+				 "base": 1,
+				 "stops": [[14,1.25],[15,1.5]]
 			},
-			"text-halo-blur": 0.5,
-			"text-color": "hsl(35, 100%, 100%)",
-			"text-halo-width": 1
+			"text-halo-blur": 0,
+			"text-translate": [0,-2]
 		}
 	});
 }
@@ -214,14 +213,31 @@ function generators() {
 		"filter": [
 			"all",
 			["in", "kind", "plant"],
+			["==", "label_placement", true],
 		],
-		"minzoom": 4,
 		"layout": {
-			'icon-image': 'circle-stroked-11',
-			'icon-size': {
-				"stops": [[5, 0], [6, 1]]
+			"text-line-height": 1,
+			"text-size": {
+				"base": 1,
+				"stops": [[6,11],[16,16]]
 			},
-			'icon-allow-overlap': true
-		}
+			"text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+			"symbol-placement": "point",
+			"text-padding": 3,
+			"text-field": "{name}",
+			"text-letter-spacing": 0.1,
+			"text-max-width": 7
+		},
+		"paint": {
+			"text-halo-color": "#fff",
+			"text-color": "hsl(0, 1%, 34%)",
+			"text-halo-width": {
+				 "base": 1,
+				 "stops": [[14,1.25],[15,1.5]]
+			},
+			"text-halo-blur": 0,
+			"text-translate": [0,-2]
+		},
+		"minzoom": 6
 	});
 }

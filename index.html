@@ -27,7 +27,7 @@
 mapboxgl.accessToken = 'pk.eyJ1Ijoia3JlM2QiLCJhIjoiY2lwcjJrZ3p2MDZyOWZvbTN0bXV1eXF6ZiJ9.xXv_HMXLK04bEtmuwsEyMQ';
 var map = new mapboxgl.Map({
 	container: 'map',
-	style: 'mapbox://styles/mapbox/satellite-streets-v10',
+	style: 'basic.json',
 	hash: true,
 	center: [-98.34, 30.55],
 	zoom: 6
@@ -36,8 +36,7 @@ var map = new mapboxgl.Map({
 function powerlines(pfx, base) {
 	var cse = JSON.parse(JSON.stringify(base));
 	cse.id = pfx + 'powerline case';
-	cse.paint["line-width"] = 7;
-	map.addLayer(cse,"poi-scalerank2");
+	map.addLayer(cse);
 
 	var primary = JSON.parse(JSON.stringify(base));
 	primary.filter.push(["in", "voltage"].concat(voltage_combos));
@@ -61,8 +60,8 @@ function powerlines(pfx, base) {
 	secondary.id = pfx + 'powerline secondary';
 	secondary.paint['line-color'].stops = secondary_stops;
 	secondary.paint['line-dasharray'] = [0, 2, 2];
-	map.addLayer(primary,"poi-scalerank2");
-	map.addLayer(secondary,"poi-scalerank2");
+	map.addLayer(primary);
+	map.addLayer(secondary);
 
 	var line = JSON.parse(JSON.stringify(base));
 	line.id = pfx + "power line";
@@ -82,7 +81,7 @@ function powerlines(pfx, base) {
 		"type": "categorical",
 		"stops": stops
 	}
-	map.addLayer(line,"poi-scalerank2");
+	map.addLayer(line);
 
 	var hvdc = JSON.parse(JSON.stringify(base));
 	hvdc.id = pfx + "hvdc";
@@ -91,7 +90,7 @@ function powerlines(pfx, base) {
 		["==", "frequency", "0"],
 	]);
 	hvdc.paint["line-color"] = voltage_colors['HVDC']
-	map.addLayer(hvdc,"poi-scalerank2");
+	map.addLayer(hvdc);
 }
 
 map.on('style.load', function () {
@@ -110,12 +109,14 @@ map.on('style.load', function () {
 			["==", "kind", "powerline"],
 			["!=", "usage", "distribution"],
 		],
+		"layout": {
+			"line-join": "miter"
+		},
 		"paint": {
-			"line-width": 3
+			"line-width": 2.5
 		}
 	}
 	powerlines('ercot_', base);
-	esri_imagery();
 	ercot();
 	labels();
 	generators();
