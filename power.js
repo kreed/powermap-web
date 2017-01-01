@@ -352,6 +352,25 @@ function powerlines() {
 	powerline_group('ercotline_', base);
 }
 
+function power_areas() {
+	map.addLayer({
+		"id": "power area",
+		"type": "line",
+		"source": "power",
+		"source-layer": "power",
+		"filter": [
+			"all",
+			["in", "kind", "substation", "plant", "generator"],
+			["!=", "label_placement", true],
+		],
+		"minzoom": 10,
+		"paint": {
+			"line-color": "hsl(0, 1%, 34%)",
+			"line-width": 1
+		}
+	});
+}
+
 function set_ercot_highlight(highlight) {
 	var opacity = highlight ? 0.33 : 1;
 	for (var layer in map.style._layers) {
@@ -369,6 +388,7 @@ function style_init() {
 		maxzoom: 16
 	});
 
+	power_areas();
 	labels();
 	powerlines();
 }
