@@ -186,76 +186,44 @@ function labels() {
 	});
 }
 
-getDocument = function(url, callback) {
-	const xhr = new window.XMLHttpRequest();
-	xhr.open('GET', url, true);
-	xhr.responseType = 'document';
-	xhr.onerror = function(e) {
-		callback(e);
-	};
-	xhr.onload = function() {
-		if (xhr.response.byteLength === 0 && xhr.status === 200) {
-			return callback(new Error('http status 200 returned without content.'));
-		}
-		if (xhr.status >= 200 && xhr.status < 300 && xhr.response) {
-			callback(null, xhr.response);
-		} else {
-			callback(new Error(xhr.statusText));
-		}
-	};
-	xhr.send();
-	return xhr;
-};
-
-function add_rtm_layer() {
+function ercot_rtm() {
+	map.addSource('ercot_rtm', {
+		'type': 'geojson',
+		'data': 'ercot_rtm.geojson'
+	});
 	map.addLayer({
-		"id": "ercot_gen",
+		"id": "ercot_rtm",
 		"type": "circle",
-		"source": "ercot_gen",
+		"source": "ercot_rtm",
 		"paint": {
 			'circle-color': '#555',
 			'circle-radius': {
 				"stops": [[5, 0], [6, 8]]
 			},
 		}
-	},"powerline label");
+	});
+	map.on('click', function (e) {
+		var features = map.queryRenderedFeatures(e.point, { layers: ['ercot_rtm'] });
+
+		if (!features.length) {
+			return;
+		}
+
+		var feature = features[0];
+
+		// Populate the popup and set its coordinates
+		// based on the feature found.
+		var popup = new mapboxgl.Popup()
+			.setLngLat(feature.geometry.coordinates)
+			.setHTML(feature.properties.description)
+			.addTo(map);
+	});
 }
 
-function add_ercot_rtm() {
-	if (map.getSource('ercot_gen')) {
-		add_rtm_layer();
-	} else {
-		getDocument('ercot_gen.php', function(error, data) {
-			var geojson = toGeoJSON.kml(data);
-			map.addSource('ercot_gen', {
-				'type': 'geojson',
-				'data': geojson
-			});
-
-			add_rtm_layer();
-
-			map.on('click', function (e) {
-				var features = map.queryRenderedFeatures(e.point, { layers: ['ercot_gen'] });
-
-				if (!features.length) {
-					return;
-				}
-
-				var feature = features[0];
-
-				// Populate the popup and set its coordinates
-				// based on the feature found.
-				var popup = new mapboxgl.Popup()
-					.setLngLat(feature.geometry.coordinates)
-					.setHTML(feature.properties.description)
-					.addTo(map);
-			});
-		});
-	}
-}
-
-function remove_ercot_rtm() {
-	map.removeLayer('ercot_gen');
+function set_ercot_rtm(visible) {
+	if (!map.getSource('ercot_rtm'))
+		ercot_rtm();
+	map.setPaintProperty('ercot_rtm', 'circle-opacity', visible ? 1 : 0);
 }
 
 function ercot_boundary() {

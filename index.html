@@ -5,7 +5,6 @@
 <title></title>
 <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.js'></script>
-<script src='togeojson.js'></script>
 <script src='power.js'></script>
 <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.css' rel='stylesheet' />
 <style>
@@ -45,22 +44,13 @@ map.on('style.load', function () {
 
 	document.getElementById('check_grid').addEventListener('change', function(e) {
 		var checked = e.target.checked;
-		if (checked) {
-			set_ercot_highlight(true);
-			set_ercot_boundary(true);
-		} else {
-			set_ercot_highlight(false);
-			set_ercot_boundary(false);
-		}
+		set_ercot_highlight(checked);
+		set_ercot_boundary(checked);
 	});
 
 	document.getElementById('check_rtm').addEventListener('change', function(e) {
 		var checked = e.target.checked;
-		if (checked) {
-			add_ercot_rtm();
-		} else {
-			remove_ercot_rtm();
-		}
+		set_ercot_rtm(checked);
 	});
 
 });
