@@ -68,38 +68,6 @@ var voltage_combos = [
 	'66000;22000'
 ];
 
-function esri_imagery() {
-	map.addSource('esri', {
-		type: 'raster',
-		tiles: ["//server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
-		maxzoom: 18,
-		attribution: '&copy; ESRI',
-		tileSize: 256
-	});
-	map.addLayer({
-		"id": "esri",
-		"type": "raster",
-		"source": "esri",
-	}, 'mapbox-mapbox-satellite');
-	map.removeLayer('mapbox-mapbox-satellite');
-}
-
-function ercot() {
-	map.addSource('ercot_bound', {
-		'type': 'geojson',
-		'data': 'ercot_bound.geojson'
-	});
-	map.addLayer({
-		"id": "ercot_bound",
-		"type": "line",
-		"source": "ercot_bound",
-		"paint": {
-			"line-color": "#888",
-			"line-width": 2,
-		}
-	},"poi-scalerank2");
-}
-
 function labels() {
 	map.addLayer({
 		"id": "powerline label",
@@ -142,7 +110,7 @@ function labels() {
 		}
 	});
 	map.addLayer({
-		"id": "power label",
+		"id": "substation label",
 		"type": "symbol",
 		"source": "power",
 		"source-layer": "power",
@@ -181,30 +149,6 @@ function labels() {
 			"text-translate": [0,-2]
 		}
 	});
-}
-
-getDocument = function(url, callback) {
-	const xhr = new window.XMLHttpRequest();
-	xhr.open('GET', url, true);
-	xhr.responseType = 'document';
-	xhr.onerror = function(e) {
-		callback(e);
-	};
-	xhr.onload = function() {
-		if (xhr.response.byteLength === 0 && xhr.status === 200) {
-			return callback(new Error('http status 200 returned without content.'));
-		}
-		if (xhr.status >= 200 && xhr.status < 300 && xhr.response) {
-			callback(null, xhr.response);
-		} else {
-			callback(new Error(xhr.statusText));
-		}
-	};
-	xhr.send();
-	return xhr;
-};
-
-function generators() {
 	map.addLayer({
 		"id": "plant label",
 		"type": "symbol",
@@ -240,4 +184,223 @@ function generators() {
 		},
 		"minzoom": 6
 	});
+}
+
+getDocument = function(url, callback) {
+	const xhr = new window.XMLHttpRequest();
+	xhr.open('GET', url, true);
+	xhr.responseType = 'document';
+	xhr.onerror = function(e) {
+		callback(e);
+	};
+	xhr.onload = function() {
+		if (xhr.response.byteLength === 0 && xhr.status === 200) {
+			return callback(new Error('http status 200 returned without content.'));
+		}
+		if (xhr.status >= 200 && xhr.status < 300 && xhr.response) {
+			callback(null, xhr.response);
+		} else {
+			callback(new Error(xhr.statusText));
+		}
+	};
+	xhr.send();
+	return xhr;
+};
+
+function add_rtm_layer() {
+	map.addLayer({
+		"id": "ercot_gen",
+		"type": "circle",
+		"source": "ercot_gen",
+		"paint": {
+			'circle-color': '#555',
+			'circle-radius': {
+				"stops": [[5, 0], [6, 8]]
+			},
+		}
+	},"powerline label");
+}
+
+function add_ercot_rtm() {
+	if (map.getSource('ercot_gen')) {
+		add_rtm_layer();
+	} else {
+		getDocument('ercot_gen.php', function(error, data) {
+			var geojson = toGeoJSON.kml(data);
+			map.addSource('ercot_gen', {
+				'type': 'geojson',
+				'data': geojson
+			});
+
+			add_rtm_layer();
+
+			map.on('click', function (e) {
+				var features = map.queryRenderedFeatures(e.point, { layers: ['ercot_gen'] });
+
+				if (!features.length) {
+					return;
+				}
+
+				var feature = features[0];
+
+				// Populate the popup and set its coordinates
+				// based on the feature found.
+				var popup = new mapboxgl.Popup()
+					.setLngLat(feature.geometry.coordinates)
+					.setHTML(feature.properties.description)
+					.addTo(map);
+			});
+		});
+	}
+}
+
+function remove_ercot_rtm() {
+	map.removeLayer('ercot_gen');
+}
+
+function ercot_boundary() {
+	map.addSource('ercot_bound', {
+		'type': 'geojson',
+		'data': 'ercot_bound.geojson'
+	});
+	map.addLayer({
+		"id": "ercot_bound",
+		"type": "line",
+		"source": "ercot_bound",
+		"paint": {
+			"line-color": "#888",
+			"line-width": 2,
+			"line-opacity": 0
+		}
+	},"otherline_primary");
+}
+
+function set_ercot_boundary(visible) {
+	if (!map.getSource('ercot_bound'))
+		ercot_boundary();
+	map.setPaintProperty('ercot_bound', 'line-opacity', visible ? 1 : 0);
+}
+
+function powerline_group(pfx, base) {
+	var novoltage = JSON.parse(JSON.stringify(base));
+	novoltage.filter.push(["!has", "voltage"]);
+	novoltage.id = pfx + "line_no_voltage";
+	novoltage.paint["line-color"] = '#444';
+	novoltage.minzoom = 9;
+	map.addLayer(novoltage, "powerline label");
+
+	var primary = JSON.parse(JSON.stringify(base));
+	primary.filter.push(["in", "voltage"].concat(voltage_combos));
+	primary.paint["line-color"] = {
+		"property": "voltage",
+		"type": "categorical"
+	}
+	var secondary = JSON.parse(JSON.stringify(primary));
+	var primary_stops = [['unknown', '#fff']];
+	var secondary_stops = [['unknown', '#fff']];
+	for (var i = 0; i < voltage_combos.length; ++i) {
+		var voltages = voltage_combos[i].split(';');
+		if (!voltage_colors.hasOwnProperty(voltages[0])) console.log('missing', voltages[0]);
+		if (!voltage_colors.hasOwnProperty(voltages[1])) console.log('missing', voltages[1]);
+		primary_stops.push([voltage_combos[i], voltage_colors[voltages[0]]]);
+		secondary_stops.push([voltage_combos[i], voltage_colors[voltages[1]]]);
+	}
+	primary.id = pfx + 'powerline primary';
+	primary.paint['line-color'].stops = primary_stops;
+	primary.paint['line-dasharray'] = [2, 2];
+	secondary.id = pfx + 'powerline secondary';
+	secondary.paint['line-color'].stops = secondary_stops;
+	secondary.paint['line-dasharray'] = [0, 2, 2];
+	map.addLayer(primary, "powerline label");
+	map.addLayer(secondary, "powerline label");
+
+	var line = JSON.parse(JSON.stringify(base));
+	line.id = pfx + "power line";
+	line.filter = line.filter.concat([
+		["has", "voltage"],
+		["!in", "voltage"].concat(voltage_combos),
+		["!=", "frequency", "0"],
+	]);
+	var stops = [];
+	stops.push(['unknown', '#fff'])
+	for (var e in voltage_colors) {
+		stops.push([e, voltage_colors[e]]);
+		stops.push([e + ';0', voltage_colors[e]]);
+	}
+	line.paint["line-color"] = {
+		"property": "voltage",
+		"type": "categorical",
+		"stops": stops
+	}
+	map.addLayer(line, "powerline label");
+
+	var hvdc = JSON.parse(JSON.stringify(base));
+	hvdc.id = pfx + "hvdc";
+	hvdc.filter = hvdc.filter.concat([
+		["has", "voltage"],
+		["==", "frequency", "0"],
+	]);
+	hvdc.paint["line-color"] = voltage_colors['HVDC']
+	map.addLayer(hvdc, "powerline label");
+}
+
+function powerlines() {
+	var base = {
+		"type": "line",
+		"source": "power",
+		"source-layer": "power",
+		"filter": [
+			"all",
+			["==", "kind", "powerline"],
+			["!=", "usage", "distribution"],
+			["!=", "grid", "ercot"],
+		],
+		"layout": {
+			"line-join": "miter"
+		},
+		"paint": {
+			"line-width": 2.5,
+		}
+	}
+	powerline_group('otherline_', base);
+
+	base = {
+		"type": "line",
+		"source": "power",
+		"source-layer": "power",
+		"filter": [
+			"all",
+			["==", "kind", "powerline"],
+			["!=", "usage", "distribution"],
+			["==", "grid", "ercot"],
+		],
+		"layout": {
+			"line-join": "miter"
+		},
+		"paint": {
+			"line-width": 2.5
+		}
+	}
+	powerline_group('ercotline_', base);
+}
+
+function set_ercot_highlight(highlight) {
+	var opacity = highlight ? 0.33 : 1;
+	for (var layer in map.style._layers) {
+		if (layer.startsWith('otherline_')) {
+			map.setPaintProperty(layer, 'line-opacity', opacity);
+		}
+	}
+}
+
+function style_init() {
+	map.addSource('power', {
+		type: 'vector',
+		tiles: ["https://nhts.kreed.org/vt/all/{z}/{x}/{y}.mvt"],
+		minzoom: 0,
+		maxzoom: 16
+	});
+
+	labels();
+	powerlines();
 }

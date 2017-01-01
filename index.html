@@ -1,27 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset='utf-8' />
-	<title></title>
-	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.js'></script>
-	<script src='togeojson.js'></script>
-	<script src='power.js'></script>
-	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.css' rel='stylesheet' />
-	<style>
-		body { margin:0; padding:0; }
-		#map { position:absolute; top:0; bottom:0; width:100%; }
-	</style>
-</head>
-<body>
+<meta charset='utf-8' />
+<title></title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.js'></script>
+<script src='togeojson.js'></script>
+<script src='power.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.css' rel='stylesheet' />
 <style>
-.map {
-	position: absolute;
-	top: 0;
-	bottom: 0;
+html, body {
 	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+body {
+	display: flex;
+	flex-direction: column;
+}
+#map {
+	flex-grow: 1;
 }
 </style>
+</head>
+<body>
+<div id='checks'>
+	<label><input type="checkbox" id="check_grid"> Highlight ERCOT lines</label>
+	<label><input type="checkbox" id="check_rtm"> Show ERCOT real-time market</label>
+</div>
 <div id='map' class='map'></div>
 <script>
 mapboxgl.accessToken = 'pk.eyJ1Ijoia3JlM2QiLCJhIjoiY2lwcjJrZ3p2MDZyOWZvbTN0bXV1eXF6ZiJ9.xXv_HMXLK04bEtmuwsEyMQ';
@@ -33,93 +40,29 @@ var map = new mapboxgl.Map({
 	zoom: 6
 });
 
-function powerlines(pfx, base) {
-	var cse = JSON.parse(JSON.stringify(base));
-	cse.id = pfx + 'powerline case';
-	map.addLayer(cse);
-
-	var primary = JSON.parse(JSON.stringify(base));
-	primary.filter.push(["in", "voltage"].concat(voltage_combos));
-	primary.paint["line-color"] = {
-		"property": "voltage",
-		"type": "categorical"
-	}
-	var secondary = JSON.parse(JSON.stringify(primary));
-	var primary_stops = [['unknown', '#fff']];
-	var secondary_stops = [['unknown', '#fff']];
-	for (var i = 0; i < voltage_combos.length; ++i) {
-		var voltages = voltage_combos[i].split(';');
-		if (!voltage_colors.hasOwnProperty(voltages[0])) console.log('missing', voltages[0]);
-		if (!voltage_colors.hasOwnProperty(voltages[1])) console.log('missing', voltages[1]);
-		primary_stops.push([voltage_combos[i], voltage_colors[voltages[0]]]);
-		secondary_stops.push([voltage_combos[i], voltage_colors[voltages[1]]]);
-	}
-	primary.id = pfx + 'powerline primary';
-	primary.paint['line-color'].stops = primary_stops;
-	primary.paint['line-dasharray'] = [2, 2];
-	secondary.id = pfx + 'powerline secondary';
-	secondary.paint['line-color'].stops = secondary_stops;
-	secondary.paint['line-dasharray'] = [0, 2, 2];
-	map.addLayer(primary);
-	map.addLayer(secondary);
-
-	var line = JSON.parse(JSON.stringify(base));
-	line.id = pfx + "power line";
-	line.filter = line.filter.concat([
-		["has", "voltage"],
-		["!in", "voltage"].concat(voltage_combos),
-		["!=", "frequency", "0"],
-	]);
-	var stops = [];
-	stops.push(['unknown', '#fff'])
-	for (var e in voltage_colors) {
-		stops.push([e, voltage_colors[e]]);
-		stops.push([e + ';0', voltage_colors[e]]);
-	}
-	line.paint["line-color"] = {
-		"property": "voltage",
-		"type": "categorical",
-		"stops": stops
-	}
-	map.addLayer(line);
-
-	var hvdc = JSON.parse(JSON.stringify(base));
-	hvdc.id = pfx + "hvdc";
-	hvdc.filter = hvdc.filter.concat([
-		["has", "voltage"],
-		["==", "frequency", "0"],
-	]);
-	hvdc.paint["line-color"] = voltage_colors['HVDC']
-	map.addLayer(hvdc);
-}
-
 map.on('style.load', function () {
-	map.addSource('power', {
-		type: 'vector',
-		tiles: ["https://nhts.kreed.org/vt/all/{z}/{x}/{y}.mvt"],
-		minzoom: 0,
-		maxzoom: 16
-	});
-	base = {
-		"type": "line",
-		"source": "power",
-		"source-layer": "power",
-		"filter": [
-			"all",
-			["==", "kind", "powerline"],
-			["!=", "usage", "distribution"],
-		],
-		"layout": {
-			"line-join": "miter"
-		},
-		"paint": {
-			"line-width": 2.5
+	style_init();
+
+	document.getElementById('check_grid').addEventListener('change', function(e) {
+		var checked = e.target.checked;
+		if (checked) {
+			set_ercot_highlight(true);
+			set_ercot_boundary(true);
+		} else {
+			set_ercot_highlight(false);
+			set_ercot_boundary(false);
 		}
-	}
-	powerlines('ercot_', base);
-	ercot();
-	labels();
-	generators();
+	});
+
+	document.getElementById('check_rtm').addEventListener('change', function(e) {
+		var checked = e.target.checked;
+		if (checked) {
+			add_ercot_rtm();
+		} else {
+			remove_ercot_rtm();
+		}
+	});
+
 });
 
 </script>
