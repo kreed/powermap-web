@@ -76,7 +76,7 @@ function labels() {
 		"source-layer": "power",
 		"filter": [
 			"all",
-			["==", "kind", "powerline"],
+			["in", "kind", "powerline", "power_cable"],
 			["!=", "usage", "distribution"]
 		],
 		"minzoom": 10,
@@ -250,6 +250,46 @@ function set_ercot_boundary(visible) {
 }
 
 function powerline_group(pfx, base) {
+	var cable_base = JSON.parse(JSON.stringify(base));
+	cable_base.filter.push(["==", "kind", "power_cable"]);
+	cable_base.paint['line-dasharray'] = [2, 2];
+
+	var cable_novoltage = JSON.parse(JSON.stringify(cable_base));
+	cable_novoltage.filter.push(["!has", "voltage"]);
+	cable_novoltage.id = pfx + "cable no voltage";
+	cable_novoltage.paint["line-color"] = '#444';
+	cable_novoltage.minzoom = 9;
+	map.addLayer(cable_novoltage, "powerline label");
+
+	var cable = JSON.parse(JSON.stringify(cable_base));
+	cable.id = pfx + "power cable";
+	cable.filter = cable.filter.concat([
+		["has", "voltage"],
+		["!=", "frequency", "0"],
+	]);
+	var max_stops = [];
+	max_stops.push([0, '#ccc'])
+	for (var e in voltage_colors) {
+		max_stops.push([Number(e), voltage_colors[e]]);
+	}
+	cable.paint["line-color"] = {
+		"property": "max_voltage",
+		"type": "categorical",
+		"stops": max_stops
+	}
+	map.addLayer(cable, "powerline label");
+
+	var cable_hvdc = JSON.parse(JSON.stringify(cable_base));
+	cable_hvdc.id = pfx + "cable_hvdc";
+	cable_hvdc.filter = cable_hvdc.filter.concat([
+		["has", "voltage"],
+		["==", "frequency", "0"],
+	]);
+	cable_hvdc.paint["line-color"] = voltage_colors['HVDC']
+	map.addLayer(cable_hvdc, "powerline label");
+
+	base.filter.push(["==", "kind", "powerline"]);
+
 	var novoltage = JSON.parse(JSON.stringify(base));
 	novoltage.filter.push(["!has", "voltage"]);
 	novoltage.id = pfx + "line_no_voltage";
@@ -290,7 +330,7 @@ function powerline_group(pfx, base) {
 		["!=", "frequency", "0"],
 	]);
 	var stops = [];
-	stops.push(['unknown', '#fff'])
+	stops.push(['unknown', '#ccc'])
 	for (var e in voltage_colors) {
 		stops.push([e, voltage_colors[e]]);
 		stops.push([e + ';0', voltage_colors[e]]);
@@ -319,7 +359,6 @@ function powerlines() {
 		"source-layer": "power",
 		"filter": [
 			"all",
-			["==", "kind", "powerline"],
 			["!=", "usage", "distribution"],
 			["!=", "grid", "ercot"],
 		],
@@ -338,7 +377,6 @@ function powerlines() {
 		"source-layer": "power",
 		"filter": [
 			"all",
-			["==", "kind", "powerline"],
 			["!=", "usage", "distribution"],
 			["==", "grid", "ercot"],
 		],
