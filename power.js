@@ -112,6 +112,45 @@ function labels() {
 		}
 	});
 	map.addLayer({
+		"id": "generator label",
+		"type": "symbol",
+		"source": "power",
+		"source-layer": "power",
+		"filter": [
+			"all",
+			["==", "kind", "generator"],
+		],
+		"minzoom": 16,
+		"layout": {
+			"text-line-height": 1,
+			"text-size": {
+				"base": 1,
+				"stops": [[12,11],[16,16]]
+			},
+			"symbol-avoid-edges": true,
+			"text-transform": "uppercase",
+			"text-font": [
+				"DIN Offc Pro Medium",
+				"Arial Unicode MS Regular"
+			],
+			"symbol-placement": "point",
+			"text-padding": 3,
+			"text-field": "{name} {generator:output:electricity}",
+			"text-letter-spacing": 0.1,
+			"text-max-width": 7
+		},
+		"paint": {
+			"text-halo-color": "#fff",
+			"text-color": "hsl(0, 1%, 34%)",
+			"text-halo-width": {
+				 "base": 1,
+				 "stops": [[14,1.25],[15,1.5]]
+			},
+			"text-halo-blur": 0,
+			"text-translate": [0,-2]
+		}
+	});
+	map.addLayer({
 		"id": "substation label",
 		"type": "symbol",
 		"source": "power",
@@ -404,13 +443,49 @@ function power_areas() {
 		"source-layer": "power",
 		"filter": [
 			"all",
-			["in", "kind", "substation", "plant", "generator"],
+			["in", "kind", "substation", "plant"],
 			["!=", "label_placement", true],
 		],
 		"minzoom": 10,
 		"paint": {
 			"line-color": "hsl(0, 1%, 34%)",
 			"line-width": 1
+		}
+	});
+	map.addLayer({
+		"id": "generator point",
+		"source": "power",
+		"source-layer": "power",
+		"filter": [
+			"all",
+			["==", "kind", "generator"],
+			["==", "$type", "Point"],
+		],
+		"type": "circle",
+		"paint": {
+			'circle-color': 'hsl(0, 100%, 71%)',
+			'circle-stroke-color': 'hsl(0, 100%, 32%)',
+			'circle-stroke-width': {
+				"stops": [[5, 0], [7, 0.5], [12, 3]]
+			},
+			'circle-radius': {
+				"stops": [[5, 0], [7, 0.5], [12, 4]]
+			},
+		}
+	});
+	map.addLayer({
+		"id": "generator polygon",
+		"source": "power",
+		"source-layer": "power",
+		"filter": [
+			"all",
+			["==", "kind", "generator"],
+			["==", "$type", "Polygon"],
+		],
+		"type": "fill",
+		"paint": {
+			'fill-color': 'hsl(0, 100%, 71%)',
+			'fill-outline-color': 'hsl(0, 100%, 32%)',
 		}
 	});
 }
