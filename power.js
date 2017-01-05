@@ -1,13 +1,14 @@
 var colors = {
-	"#5b40bf": ["HVDC"],
+	"#ccc": ["none"],
+	"#444": ["unknown"],
+	"#75fff3": ["HVDC"],
 	"#d07b87": ["1000000"],
 	"#882e72": ["800000"],
-	"#aa4dbf": ["765000", "750000"],
+	"#c640d9": ["765000", "750000"],
 	"#d659b7": ["735000", "660000"],
-	"#61477a": ["525000", "500000", "450000"],
-	"#4cac8f": ["440000", "420000", "400000"],
+	"#563389": ["525000", "500000", "450000"],
+	"#a1a442": ["440000", "420000", "400000"],
 	"#cb87a1": ["380000", "360000", "350000"],
-	/*"#dc050c",*/
 	"#c23e61": ["345000", "330000", "315000", "300000"],
 	"#e8601c": ["287000", "275000"],
 	"#f1932d": ["240000", "230000", "225000"],
@@ -16,7 +17,7 @@ var colors = {
 	"#7bafde": ["125000", "120000", "115000", "113000", "110000", "100000", "90000", "77000"],
 	"#4eb265": ["72000", "70000", "69000", "66000", "65000", "63000"],
 	"#818e38": ["60000", "55000", "50000", "46000"],
-	"#b97344": ["35000", "34500", "33000", "22000", "20000"],
+	"#7e492d": ["35000", "34500", "33000", "22000", "20000"],
 };
 
 var voltage_colors = {};
@@ -64,6 +65,7 @@ var voltage_combos = [
 	'132000;55000',
 	'132000;50000',
 	'115000;69000',
+	'115000;34500',
 	'110000;20000',
 	'66000;22000'
 ];
@@ -257,7 +259,7 @@ function powerline_group(pfx, base) {
 	var cable_novoltage = JSON.parse(JSON.stringify(cable_base));
 	cable_novoltage.filter.push(["!has", "voltage"]);
 	cable_novoltage.id = pfx + "cable no voltage";
-	cable_novoltage.paint["line-color"] = '#444';
+	cable_novoltage.paint['line-color'] = voltage_colors.none;
 	cable_novoltage.minzoom = 9;
 	map.addLayer(cable_novoltage, "powerline label");
 
@@ -268,9 +270,11 @@ function powerline_group(pfx, base) {
 		["!=", "frequency", "0"],
 	]);
 	var max_stops = [];
-	max_stops.push([0, '#ccc'])
+	max_stops.push([0, voltage_colors.unknown])
 	for (var e in voltage_colors) {
-		max_stops.push([Number(e), voltage_colors[e]]);
+		var n = Number(e);
+		if (n == NaN) continue;
+		max_stops.push([n, voltage_colors[e]]);
 	}
 	cable.paint["line-color"] = {
 		"property": "max_voltage",
@@ -285,7 +289,7 @@ function powerline_group(pfx, base) {
 		["has", "voltage"],
 		["==", "frequency", "0"],
 	]);
-	cable_hvdc.paint["line-color"] = voltage_colors['HVDC']
+	cable_hvdc.paint["line-color"] = voltage_colors.HVDC;
 	map.addLayer(cable_hvdc, "powerline label");
 
 	base.filter.push(["==", "kind", "powerline"]);
@@ -293,7 +297,7 @@ function powerline_group(pfx, base) {
 	var novoltage = JSON.parse(JSON.stringify(base));
 	novoltage.filter.push(["!has", "voltage"]);
 	novoltage.id = pfx + "line_no_voltage";
-	novoltage.paint["line-color"] = '#444';
+	novoltage.paint['line-color'] = voltage_colors.none;
 	novoltage.minzoom = 9;
 	map.addLayer(novoltage, "powerline label");
 
@@ -304,8 +308,8 @@ function powerline_group(pfx, base) {
 		"type": "categorical"
 	}
 	var secondary = JSON.parse(JSON.stringify(primary));
-	var primary_stops = [['unknown', '#fff']];
-	var secondary_stops = [['unknown', '#fff']];
+	var primary_stops = [['unknown', voltage_colors.unknown]];
+	var secondary_stops = [['unknown', voltage_colors.unknown]];
 	for (var i = 0; i < voltage_combos.length; ++i) {
 		var voltages = voltage_combos[i].split(';');
 		if (!voltage_colors.hasOwnProperty(voltages[0])) console.log('missing', voltages[0]);
@@ -330,8 +334,10 @@ function powerline_group(pfx, base) {
 		["!=", "frequency", "0"],
 	]);
 	var stops = [];
-	stops.push(['unknown', '#ccc'])
+	stops.push(['unknown', voltage_colors.unknown])
 	for (var e in voltage_colors) {
+		var n = Number(e);
+		if (n == NaN) continue;
 		stops.push([e, voltage_colors[e]]);
 		stops.push([e + ';0', voltage_colors[e]]);
 	}
