@@ -450,6 +450,21 @@ function power_areas() {
 		}
 	});
 	map.addLayer({
+		"id": "generator polygon",
+		"source": "power",
+		"source-layer": "power",
+		"filter": [
+			"all",
+			["==", "kind", "generator"],
+			["==", "$type", "Polygon"],
+		],
+		"type": "fill",
+		"paint": {
+			'fill-color': 'hsl(0, 100%, 71%)',
+			'fill-outline-color': 'hsl(0, 100%, 32%)',
+		}
+	});
+	map.addLayer({
 		"id": "generator point",
 		"source": "power",
 		"source-layer": "power",
@@ -468,21 +483,6 @@ function power_areas() {
 			'circle-radius': {
 				"stops": [[5, 0], [7, 0.5], [12, 4]]
 			},
-		}
-	});
-	map.addLayer({
-		"id": "generator polygon",
-		"source": "power",
-		"source-layer": "power",
-		"filter": [
-			"all",
-			["==", "kind", "generator"],
-			["==", "$type", "Polygon"],
-		],
-		"type": "fill",
-		"paint": {
-			'fill-color': 'hsl(0, 100%, 71%)',
-			'fill-outline-color': 'hsl(0, 100%, 32%)',
 		}
 	});
 }
