@@ -499,7 +499,7 @@ function set_ercot_highlight(highlight) {
 function style_init() {
 	map.addSource('power', {
 		type: 'vector',
-		tiles: ["https://nhts.kreed.org/vt/all/{z}/{x}/{y}.mvt"],
+		tiles: ["https://tiles.kreed.org/all/{z}/{x}/{y}.mvt"],
 		minzoom: 0,
 		maxzoom: 16
 	});
