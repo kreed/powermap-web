@@ -79,7 +79,7 @@ function labels() {
 		"filter": [
 			"all",
 			["in", "kind", "powerline", "power_cable"],
-			["!=", "usage", "distribution"]
+			["!=", "kind_detail", "minor"]
 		],
 		"minzoom": 10,
 		"layout": {
@@ -404,7 +404,7 @@ function powerlines() {
 		"source-layer": "power",
 		"filter": [
 			"all",
-			["!=", "usage", "distribution"],
+			["!=", "kind_detail", "minor"],
 			["!=", "grid", "ercot"],
 		],
 		"layout": {
@@ -422,7 +422,7 @@ function powerlines() {
 		"source-layer": "power",
 		"filter": [
 			"all",
-			["!=", "usage", "distribution"],
+			["!=", "kind_detail", "minor"],
 			["==", "grid", "ercot"],
 		],
 		"layout": {
