@@ -489,14 +489,17 @@ function power_areas() {
 	});
 }
 
-function set_ercot_highlight(highlight) {
-	var opacity = highlight ? 0.33 : 1;
+function set_show_powerlines(show, highlight_ercot) {
+	var opacity = show ? 1 : 0;
 	for (var layer in map.style._layers) {
 		if (layer.startsWith('otherline_')) {
-			map.setPaintProperty(layer, 'line-opacity', opacity);
+			map.setPaintProperty(layer, 'line-opacity', show ? (highlight_ercot ? 0.33 : 1) : 0);
+		} else if (layer.startsWith('ercotline_')) {
+			map.setPaintProperty(layer, 'line-opacity', show ? 1 : 0);
 		}
 	}
 }
+
 
 function style_init() {
 	map.addSource('power', {

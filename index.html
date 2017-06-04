@@ -25,6 +25,7 @@ body {
 </head>
 <body>
 <div id='checks'>
+	<label><input type="checkbox" id="check_lines" checked="yes"> Show powerlines</label>
 	<label><input type="checkbox" id="check_grid"> Highlight ERCOT lines</label>
 	<label><input type="checkbox" id="check_rtm"> Show ERCOT real-time market</label>
 </div>
@@ -42,9 +43,10 @@ var map = new mapboxgl.Map({
 map.on('style.load', function () {
 	style_init();
 
-	document.getElementById('check_grid').addEventListener('change', function(e) {
+	var grid_check = document.getElementById('check_grid');
+	grid_check.addEventListener('change', function(e) {
 		var checked = e.target.checked;
-		set_ercot_highlight(checked);
+		set_show_powerlines(true, checked);
 		set_ercot_boundary(checked);
 	});
 
@@ -53,6 +55,11 @@ map.on('style.load', function () {
 		set_ercot_rtm(checked);
 	});
 
+	document.getElementById('check_lines').addEventListener('change', function(e) {
+		var checked = e.target.checked;
+		set_show_powerlines(checked, grid_check.checked);
+		grid_check.disabled = !checked;
+	});
 });
 
 </script>
