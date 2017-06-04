@@ -411,7 +411,10 @@ function powerlines() {
 			"line-join": "miter"
 		},
 		"paint": {
-			"line-width": 2.5,
+			"line-width": {
+				"base": 1.5,
+				"stops": [[8,1.5],[12,3]]
+			},
 		}
 	}
 	powerline_group('otherline_', base);
@@ -428,7 +431,10 @@ function powerlines() {
 			"line-join": "miter"
 		},
 		"paint": {
-			"line-width": 2.5
+			"line-width": {
+				"base": 1.5,
+				"stops": [[8,1.5],[12,3]]
+			},
 		}
 	}
 	powerline_group('ercotline_', base);
