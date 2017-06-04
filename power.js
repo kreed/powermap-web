@@ -311,8 +311,9 @@ function powerline_group(pfx, base) {
 	max_stops.push([0, voltage_colors.unknown])
 	for (var e in voltage_colors) {
 		var n = Number(e);
-		if (n == NaN) continue;
-		max_stops.push([n, voltage_colors[e]]);
+		if (n > 0) {
+			max_stops.push([n, voltage_colors[e]]);
+		}
 	}
 	cable.paint["line-color"] = {
 		"property": "max_voltage",
@@ -375,9 +376,10 @@ function powerline_group(pfx, base) {
 	stops.push(['unknown', voltage_colors.unknown])
 	for (var e in voltage_colors) {
 		var n = Number(e);
-		if (n == NaN) continue;
-		stops.push([e, voltage_colors[e]]);
-		stops.push([e + ';0', voltage_colors[e]]);
+		if (n > 0) {
+			stops.push([e, voltage_colors[e]]);
+			stops.push([e + ';0', voltage_colors[e]]);
+		}
 	}
 	line.paint["line-color"] = {
 		"property": "voltage",
