@@ -32,7 +32,7 @@ body {
 <div id='map' class='map'></div>
 <script>
 mapboxgl.accessToken = 'pk.eyJ1Ijoia3JlM2QiLCJhIjoiY2lwcjJrZ3p2MDZyOWZvbTN0bXV1eXF6ZiJ9.xXv_HMXLK04bEtmuwsEyMQ';
-var map = new mapboxgl.Map({
+var mb = new mapboxgl.Map({
 	container: 'map',
 	style: 'basic.json',
 	hash: true,
@@ -40,24 +40,24 @@ var map = new mapboxgl.Map({
 	zoom: 6
 });
 
-map.on('style.load', function () {
-	style_init();
+mb.on('style.load', function () {
+	style_init(mb, "https://tiles.kreed.org/all/{z}/{x}/{y}.mvt");
 
 	var grid_check = document.getElementById('check_grid');
 	grid_check.addEventListener('change', function(e) {
 		var checked = e.target.checked;
-		set_show_powerlines(true, checked);
-		set_ercot_boundary(checked);
+		set_show_powerlines(mb, true, checked);
+		set_ercot_boundary(mb, checked);
 	});
 
 	document.getElementById('check_rtm').addEventListener('change', function(e) {
 		var checked = e.target.checked;
-		set_ercot_rtm(checked);
+		set_ercot_rtm(mb, checked);
 	});
 
 	document.getElementById('check_lines').addEventListener('change', function(e) {
 		var checked = e.target.checked;
-		set_show_powerlines(checked, grid_check.checked);
+		set_show_powerlines(mb, checked, grid_check.checked);
 		grid_check.disabled = !checked;
 	});
 });

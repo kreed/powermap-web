@@ -70,7 +70,7 @@ var voltage_combos = [
 	'66000;22000'
 ];
 
-function labels() {
+function labels(map) {
 	map.addLayer({
 		"id": "powerline label",
 		"type": "symbol",
@@ -226,7 +226,7 @@ function labels() {
 	});
 }
 
-function ercot_rtm() {
+function ercot_rtm(map) {
 	map.addSource('ercot_rtm', {
 		'type': 'geojson',
 		'data': 'ercot_rtm.geojson'
@@ -260,13 +260,13 @@ function ercot_rtm() {
 	});
 }
 
-function set_ercot_rtm(visible) {
+function set_ercot_rtm(map, visible) {
 	if (!map.getSource('ercot_rtm'))
-		ercot_rtm();
+		ercot_rtm(map);
 	map.setPaintProperty('ercot_rtm', 'circle-opacity', visible ? 1 : 0);
 }
 
-function ercot_boundary() {
+function ercot_boundary(map) {
 	map.addSource('ercot_bound', {
 		'type': 'geojson',
 		'data': 'ercot_bound.geojson'
@@ -283,13 +283,19 @@ function ercot_boundary() {
 	},"otherline_primary");
 }
 
-function set_ercot_boundary(visible) {
+function set_ercot_boundary(map, visible) {
 	if (!map.getSource('ercot_bound'))
-		ercot_boundary();
+		ercot_boundary(map);
 	map.setPaintProperty('ercot_bound', 'line-opacity', visible ? 1 : 0);
 }
 
-function powerline_group(pfx, base) {
+function powerline_group(map, pfx, base) {
+	if (window.location.search) {
+		var v = window.location.search.substring(1);
+		var comb = voltage_combos.filter(function (e) { return e.indexOf(v) >= 0 });
+		base.filter.push(["in", "voltage", v].concat(comb));
+	}
+
 	var cable_base = JSON.parse(JSON.stringify(base));
 	cable_base.filter.push(["==", "kind", "power_cable"]);
 	cable_base.paint['line-dasharray'] = [2, 2];
@@ -398,7 +404,7 @@ function powerline_group(pfx, base) {
 	map.addLayer(hvdc, "powerline label");
 }
 
-function powerlines() {
+function powerlines(map) {
 	var base = {
 		"type": "line",
 		"source": "power",
@@ -417,7 +423,7 @@ function powerlines() {
 			},
 		}
 	}
-	powerline_group('otherline_', base);
+	powerline_group(map, 'otherline_', base);
 
 	base = {
 		"type": "line",
@@ -437,10 +443,10 @@ function powerlines() {
 			},
 		}
 	}
-	powerline_group('ercotline_', base);
+	powerline_group(map, 'ercotline_', base);
 }
 
-function power_areas() {
+function power_areas(map) {
 	map.addLayer({
 		"id": "power area",
 		"type": "line",
@@ -495,7 +501,7 @@ function power_areas() {
 	});
 }
 
-function set_show_powerlines(show, highlight_ercot) {
+function set_show_powerlines(map, show, highlight_ercot) {
 	var opacity = show ? 1 : 0;
 	for (var layer in map.style._layers) {
 		if (layer.startsWith('otherline_')) {
@@ -507,15 +513,15 @@ function set_show_powerlines(show, highlight_ercot) {
 }
 
 
-function style_init() {
+function style_init(map, source) {
 	map.addSource('power', {
 		type: 'vector',
-		tiles: ["https://tiles.kreed.org/all/{z}/{x}/{y}.mvt"],
+		tiles: [source],
 		minzoom: 0,
 		maxzoom: 16
 	});
 
-	power_areas();
-	labels();
-	powerlines();
+	power_areas(map);
+	labels(map);
+	powerlines(map);
 }

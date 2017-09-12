@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='utf-8' />
+	<title></title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js'></script>
+	<script src='power.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.css' rel='stylesheet' />
+	<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.js'></script>
+	<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.css' type='text/css' />
+	<style>
+		body { margin:0; padding:0; overflow: hidden; }
+		.map { position:absolute; top:0; bottom:0; width:100%; }
+		body * {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+	</style>
+</head>
+<body>
+
+<div id='before' class='map'></div>
+<div id='after' class='map'></div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoia3JlM2QiLCJhIjoiY2lwcjJrZ3p2MDZyOWZvbTN0bXV1eXF6ZiJ9.xXv_HMXLK04bEtmuwsEyMQ';
+var before = new mapboxgl.Map({
+	container: 'before',
+	style: 'basic.json',
+	hash: true,
+	center: [-98.34, 30.55],
+	zoom: 6
+});
+var after = new mapboxgl.Map({
+	container: 'after',
+	style: 'basic.json',
+	hash: true,
+	center: [-98.34, 30.55],
+	zoom: 6
+});
+before.on('style.load', function () {
+	style_init(before, "https://tiles.kreed.org/2014/all/{z}/{x}/{y}.mvt");
+});
+after.on('style.load', function () {
+	style_init(after, "https://tiles.kreed.org/all/{z}/{x}/{y}.mvt");
+});
+
+new mapboxgl.Compare(before, after);
+</script>
+
+</body>
+</html>
