@@ -1,0 +1,354 @@
+import:
+    - https://mapzen.com/carto/refill-style/9/refill-style.zip
+    - https://mapzen.com/carto/refill-style/9/themes/detail-8.zip
+    - https://mapzen.com/carto/refill-style/9/themes/label-2.zip
+    - https://mapzen.com/carto/refill-style/9/themes/color-zinc.zip
+
+global:
+    sdk_mapzen_api_key: mapzen-BtoKQDi
+    sdk_building_extrude: false
+
+    black_color:                [0.650,0.650,0.650]
+    dark_gray_color:            [0.650,0.650,0.650]
+    dark_color:                 [0.680,0.680,0.680]
+    mid_color:                  [0.722,0.722,0.722]
+    midlight_color:             [0.788,0.788,0.788]
+
+    voltage_missing_color: [ 0, 0.047, 0.8 ]
+    voltage_unknown_color: [ 0, 0.016, 0.267 ]
+    hvdc_color: [ 0.459, 1, 0.953 ]
+    voltage_colors:
+        1000000: [ 0.816, 0.482, 0.529 ]
+        800000: [ 0.533, 0.18, 0.447 ]
+        765000: [ 0.776, 0.251, 0.851 ]
+        750000: [ 0.776, 0.251, 0.851 ]
+        735000: [ 0.839, 0.349, 0.718 ]
+        660000: [ 0.839, 0.349, 0.718 ]
+        525000: [ 0.337, 0.2, 0.537 ]
+        500000: [ 0.337, 0.2, 0.537 ]
+        450000: [ 0.337, 0.2, 0.537 ]
+        440000: [ 0.631, 0.643, 0.259 ]
+        420000: [ 0.631, 0.643, 0.259 ]
+        400000: [ 0.631, 0.643, 0.259 ]
+        380000: [ 0.796, 0.529, 0.631 ]
+        360000: [ 0.796, 0.529, 0.631 ]
+        350000: [ 0.796, 0.529, 0.631 ]
+        345000: [ 0.761, 0.243, 0.38 ]
+        330000: [ 0.761, 0.243, 0.38 ]
+        315000: [ 0.761, 0.243, 0.38 ]
+        300000: [ 0.761, 0.243, 0.38 ]
+        287000: [ 0.91, 0.376, 0.11 ]
+        275000: [ 0.91, 0.376, 0.11 ]
+        240000: [ 0.945, 0.576, 0.176 ]
+        230000: [ 0.945, 0.576, 0.176 ]
+        225000: [ 0.945, 0.576, 0.176 ]
+        220000: [ 0.804, 0.286, 0.22 ]
+        187000: [ 0.804, 0.286, 0.22 ]
+        170000: [ 0.804, 0.286, 0.22 ]
+        161000: [ 0.098, 0.396, 0.69 ]
+        154000: [ 0.098, 0.396, 0.69 ]
+        150000: [ 0.098, 0.396, 0.69 ]
+        144000: [ 0.098, 0.396, 0.69 ]
+        138000: [ 0.098, 0.396, 0.69 ]
+        132000: [ 0.098, 0.396, 0.69 ]
+        130000: [ 0.098, 0.396, 0.69 ]
+        125000: [ 0.482, 0.686, 0.871 ]
+        120000: [ 0.482, 0.686, 0.871 ]
+        115000: [ 0.482, 0.686, 0.871 ]
+        113000: [ 0.482, 0.686, 0.871 ]
+        110000: [ 0.482, 0.686, 0.871 ]
+        100000: [ 0.482, 0.686, 0.871 ]
+        90000: [ 0.482, 0.686, 0.871 ]
+        77000: [ 0.482, 0.686, 0.871 ]
+        72000: [ 0.306, 0.698, 0.396 ]
+        70000: [ 0.306, 0.698, 0.396 ]
+        69000: [ 0.306, 0.698, 0.396 ]
+        66000: [ 0.306, 0.698, 0.396 ]
+        65000: [ 0.306, 0.698, 0.396 ]
+        63000: [ 0.306, 0.698, 0.396 ]
+        60000: [ 0.506, 0.557, 0.22 ]
+        55000: [ 0.506, 0.557, 0.22 ]
+        50000: [ 0.506, 0.557, 0.22 ]
+        46000: [ 0.506, 0.557, 0.22 ]
+        35000: [ 0.494, 0.286, 0.176 ]
+        34500: [ 0.494, 0.286, 0.176 ]
+        33000: [ 0.494, 0.286, 0.176 ]
+        22000: [ 0.494, 0.286, 0.176 ]
+        20000: [ 0.494, 0.286, 0.176 ]
+
+    lookup_voltage_color: |
+        function(voltage) {
+            if (!voltage) return global.voltage_missing_color;
+            var v = global.voltage_colors[voltage];
+            if (v) return v;
+            return global.voltage_unknown_color;
+        }
+
+    pretty_print_voltage: |
+        function(voltage) {
+            var n = parseInt(voltage);
+            if (n && n >= 1000) return n / 1000 + ' kV';
+            else return voltage;
+        }
+
+    ercotgrid: false
+    grid_color: |
+       function(grid, color) {
+          if (global.ercotgrid && grid != 'ercot') {
+              var color = color.slice();
+              color[0] = (color[0] + 1.0) / 2.0;
+              color[1] = (color[1] + 1.0) / 2.0;
+              color[2] = (color[2] + 1.0) / 2.0;
+          }
+          return color;
+       }
+
+sources:
+    power:
+        type: MVT
+        max_zoom: 16
+        url: https://tiles.kreed.org/power/{z}/{x}/{y}.pbf
+
+    ercotrtm:
+        type: GeoJSON
+        url: ercot_rtm.geojson
+
+styles:
+    label:
+        base: text
+        blend_order: 2
+        draw:
+            font:
+                size: [[9, 8px], [20, 16px]]
+                family: global.text_font_family
+                weight: normal
+                fill: black
+                stroke: { color: global.white_color, width: 3px }
+
+    powerline:
+        base: lines
+        blend: inlay
+        draw:
+            width: [[8, 1.5px], [14, 3px]]
+
+    powerline2v0:
+        base: lines
+        blend: inlay
+        dash: [3, 3]
+        draw:
+            width: [[8, 1.5px], [14, 3px]]
+
+    powerline2v1:
+        base: lines
+        blend: inlay
+        dash: [0, 3, 3, 0]
+        draw:
+            width: [[8, 1.5px], [14, 3px]]
+
+    powerline3v0:
+        base: lines
+        blend: inlay
+        dash: [3, 6]
+        draw:
+            width: [[8, 1.5px], [14, 3px]]
+
+    powerline3v1:
+        base: lines
+        blend: inlay
+        dash: [0, 3, 3, 3]
+        draw:
+            width: [[8, 1.5px], [14, 3px]]
+
+    powerline3v2:
+        base: lines
+        blend: inlay
+        dash: [0, 6, 3, 0]
+        draw:
+            width: [[8, 1.5px], [14, 3px]]
+
+    powercable:
+        base: lines
+        blend: inlay
+        dash: [3, 1]
+        draw:
+            width: [[8, 1.5px], [14, 3px]]
+
+    inlay-point:
+        base: points
+        blend: inlay
+
+layers:
+    power-line:
+        data: { source: power }
+
+        powerline0v:
+            filter: { kind: [line, minor_line], voltage_count: 0 }
+            draw:
+                powerline:
+                    color: function() { return global.grid_color(feature.grid, global.voltage_missing_color) }
+                    order: 500
+
+        powerline1v:
+            filter: { kind: [line, minor_line], not: { frequency: "0" }, voltage_count: 1 }
+            draw:
+                powerline:
+                    color: function() { return global.grid_color(feature.grid, global.lookup_voltage_color(feature.voltage_normalized)) }
+                    order: 500
+
+        powerline2v0:
+            filter: { kind: [line, minor_line], not: { frequency: "0" }, voltage_count: 2 }
+            draw:
+                powerline2v0:
+                    color: function() { return global.grid_color(feature.grid, global.lookup_voltage_color(feature.voltage_normalized.split(';')[0])) }
+                    order: 500
+
+        powerline2v1:
+            filter: { kind: [line, minor_line], not: { frequency: "0" }, voltage_count: 2 }
+            draw:
+                powerline2v1:
+                    color: function() { return global.grid_color(feature.grid, global.lookup_voltage_color(feature.voltage_normalized.split(';')[1])) }
+                    order: 499
+
+        powerline3v0:
+            filter: { kind: [line, minor_line], not: { frequency: "0" }, voltage_count: 3 }
+            draw:
+                powerline3v0:
+                    color: function() { return global.grid_color(feature.grid, global.lookup_voltage_color(feature.voltage_normalized.split(';')[0])) }
+                    order: 500
+
+        powerline3v1:
+            filter: { kind: [line, minor_line], not: { frequency: "0" }, voltage_count: 3 }
+            draw:
+                powerline3v1:
+                    color: function() { return global.grid_color(feature.grid, global.lookup_voltage_color(feature.voltage_normalized.split(';')[1])) }
+                    order: 499
+
+        powerline3v2:
+            filter: { kind: [line, minor_line], not: { frequency: "0" }, voltage_count: 3 }
+            draw:
+                powerline3v2:
+                    color: function() { return global.grid_color(feature.grid, global.lookup_voltage_color(feature.voltage_normalized.split(';')[2])) }
+                    order: 499
+
+        powerlinehvdc:
+            filter: { kind: [line, minor_line], frequency: "0" }
+            draw:
+                powerline:
+                    color: function() { return global.grid_color(feature.grid, global.hvdc_color) }
+                    order: 500
+
+        powercable:
+            filter: { kind: cable }
+            draw:
+                powercable:
+                    color: |
+                        function() { return global.grid_color(feature.grid, feature.frequency == "0" ? global.hvdc_color : global.lookup_voltage_color(feature.max_voltage)) }
+                    order: 500
+
+        linelabel:
+            filter: { voltage: true, $zoom: { min: 10 } }
+            draw:
+                label:
+                    text_source: |
+                        function() { return feature.voltage.split(';').map(global.pretty_print_voltage).join('; ') + (feature.cables ? ' (' + feature.cables + ')' : ''); }
+                    offset: [0, -8px]
+
+    power-polygon:
+        data: { source: power }
+
+        powerarea:
+            filter: { kind: [substation, plant] }
+            draw:
+                lines:
+                    color: '#585656'
+                    width: [[8, 1px], [14, 1.5px]]
+                    order: 300
+
+        generator:
+            filter: { kind: generator }
+            draw:
+                polygons:
+                    color: '#ff6b6b'
+                    order: 500
+                lines:
+                    color: '#a30000'
+                    width: 1.5px
+                    order: 400
+
+    power-point:
+        data: { source: power }
+
+        generator:
+            filter: { kind: generator, label_placement: [false] }
+            draw:
+                inlay-point:
+                    collide: false
+                    color: '#ff6b6b'
+                    size: [[6, 0], [7, 0.1], [12, 8]]
+                    outline:
+                        color: '#a30000'
+                        width: [[7, 0.1], [12, 1]]
+                    order: 400
+
+        substationlabel:
+            filter: { kind: substation, label_placement: true, $zoom: { min: 10 } }
+            draw:
+                label:
+                    buffer: 1px
+                    repeat_distance: 0px
+                    priority: 25
+                    font:
+                        transform: uppercase
+                    text_source: |
+                        function() {
+                            var a = [];
+                            if (feature.name) a.push(feature.name);
+                            if (feature.voltage) a.push(feature.voltage.split(';').map(global.pretty_print_voltage).join('; '));
+                            return a.join(' ');
+                        }
+
+        plantlabel:
+            filter: { kind: plant, label_placement: true }
+            draw:
+                label:
+                    buffer: 1px
+                    repeat_distance: 0px
+                    priority: 20
+                    font:
+                        size: [[9, 11px], [20, 20px]]
+                    text_source: |
+                        function() {
+                            var a = [];
+                            if (feature.name) a.push(feature.name);
+                            if (feature.capacity) a.push(feature.capacity);
+                            return a.join(' ');
+                        }
+
+        generatorlabel:
+            filter: { kind: generator, $zoom: { min: 15 } }
+            draw:
+                label:
+                    buffer: 1px
+                    repeat_distance: 0px
+                    priority: 35
+                    offset: [0, -12px]
+                    text_source: |
+                        function() {
+                            var a = [];
+                            if (feature.name) a.push(feature.name);
+                            if (feature.capacity) a.push(feature.capacity);
+                            return a.join(' ');
+                        }
+
+    ercotrtm:
+        enabled: false
+        data: { source: ercotrtm }
+        generator:
+            filter: { $zoom: { min: 6 } }
+            draw:
+                points:
+                    interactive: true
+                    collide: false
+                    color: '#555'
+                    size: 15
+                    order: 700
