@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>powermap</title>
-<link rel="stylesheet" href="//unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+<link rel="stylesheet" href="//unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
 <style>
 html, body {
 	width: 100%;
@@ -29,7 +29,7 @@ body {
 	<label><input type="checkbox" id="check_rtm"> Show ERCOT real-time market</label>
 </div>
 <div id="map"></div>
-<script src="//unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+<script src="//unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
 <script src="//unpkg.com/leaflet-hash@0.2.1/leaflet-hash.js"></script>
 <script src="//mapzen.com/tangram/0.13.2/tangram.min.js"></script>
 <script>
@@ -52,7 +52,7 @@ map = (function () {
 
 	var layer = Tangram.leafletLayer({
 		scene: 'scene.yaml',
-		attribution: '<a href="//mapzen.com/tangram" target="_blank">Tangram</a> | &copy; OSM contributors | <a href="//mapzen.com/" target="_blank">Mapzen</a>'
+		attribution: '<a href="//mapzen.com/tangram" target="_blank" rel="noopener">Tangram</a> | &copy; OSM contributors | <a href="//mapzen.com/" target="_blank" rel="noopener">Mapzen</a>'
 	});
 
 	window.layer = layer;
