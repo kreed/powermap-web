@@ -6,7 +6,6 @@ import:
 
 global:
     sdk_mapzen_api_key: mapzen-BtoKQDi
-    sdk_building_extrude: false
 
     black_color:                [0.650,0.650,0.650]
     dark_gray_color:            [0.650,0.650,0.650]
@@ -14,9 +13,9 @@ global:
     mid_color:                  [0.722,0.722,0.722]
     midlight_color:             [0.788,0.788,0.788]
 
-    voltage_missing_color: [ 0, 0.047, 0.8 ]
-    voltage_unknown_color: [ 0, 0.016, 0.267 ]
-    hvdc_color: [ 0.459, 1, 0.953 ]
+    voltage_missing_color: [0.55,0.55,0.55]
+    voltage_unknown_color: [0.33,0.33,0.33]
+    hvdc_color: [0.459,1,0.953]
     voltage_colors:
         1000000: [ 0.816, 0.482, 0.529 ]
         800000: [ 0.533, 0.18, 0.447 ]
@@ -189,11 +188,11 @@ layers:
             filter: { kind: [line, minor_line] }
 
             powerline0v:
-                filter: { voltage_count: 0 }
+                filter: { voltage: false }
                 draw:
                     powerline:
                         color: global.voltage_missing_color
-                        order: 500
+                        order: 498
 
             powerline1v:
                 filter: { voltage_count: 1 }
