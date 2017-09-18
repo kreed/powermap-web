@@ -76,12 +76,28 @@ global:
         22000: [ 0.494, 0.286, 0.176 ]
         20000: [ 0.494, 0.286, 0.176 ]
 
+    ercotgrid: false
     lookup_voltage_color: |
-        function(voltage) {
-            if (!voltage) return global.voltage_missing_color;
-            var v = global.voltage_colors[voltage];
-            if (v) return v;
-            return global.voltage_unknown_color;
+        function(feature, split) {
+            var v = feature.voltage_normalized;
+            if (!v) return global.voltage_missing_color;
+
+            if (feature.frequency == "0") {
+                color = global.hvdc_color;
+            } else {
+                var color = global.voltage_unknown_color;
+                if (split != undefined) v = v.split(';')[split];
+                color = global.voltage_colors[v];
+            }
+
+            if (global.ercotgrid && feature.grid != 'ercot') {
+                color = color.slice();
+                color[0] = (color[0] + 1.0) / 2.0;
+                color[1] = (color[1] + 1.0) / 2.0;
+                color[2] = (color[2] + 1.0) / 2.0;
+            }
+
+            return color;
         }
 
     pretty_print_voltage: |
@@ -90,18 +106,6 @@ global:
             if (n && n >= 1000) return n / 1000 + ' kV';
             else return voltage;
         }
-
-    ercotgrid: false
-    grid_color: |
-       function(grid, color) {
-          if (global.ercotgrid && grid != 'ercot') {
-              var color = color.slice();
-              color[0] = (color[0] + 1.0) / 2.0;
-              color[1] = (color[1] + 1.0) / 2.0;
-              color[2] = (color[2] + 1.0) / 2.0;
-          }
-          return color;
-       }
 
 sources:
     power:
@@ -181,68 +185,63 @@ layers:
     power-line:
         data: { source: power }
 
-        powerline0v:
-            filter: { kind: [line, minor_line], voltage_count: 0 }
-            draw:
-                powerline:
-                    color: function() { return global.grid_color(feature.grid, global.voltage_missing_color) }
-                    order: 500
+        powerlines:
+            filter: { kind: [line, minor_line] }
 
-        powerline1v:
-            filter: { kind: [line, minor_line], not: { frequency: "0" }, voltage_count: 1 }
-            draw:
-                powerline:
-                    color: function() { return global.grid_color(feature.grid, global.lookup_voltage_color(feature.voltage_normalized)) }
-                    order: 500
+            powerline0v:
+                filter: { voltage_count: 0 }
+                draw:
+                    powerline:
+                        color: global.voltage_missing_color
+                        order: 500
 
-        powerline2v0:
-            filter: { kind: [line, minor_line], not: { frequency: "0" }, voltage_count: 2 }
-            draw:
-                powerline2v0:
-                    color: function() { return global.grid_color(feature.grid, global.lookup_voltage_color(feature.voltage_normalized.split(';')[0])) }
-                    order: 500
+            powerline1v:
+                filter: { voltage_count: 1 }
+                draw:
+                    powerline:
+                        color: function() { return global.lookup_voltage_color(feature) }
+                        order: 500
 
-        powerline2v1:
-            filter: { kind: [line, minor_line], not: { frequency: "0" }, voltage_count: 2 }
-            draw:
-                powerline2v1:
-                    color: function() { return global.grid_color(feature.grid, global.lookup_voltage_color(feature.voltage_normalized.split(';')[1])) }
-                    order: 499
+            powerline2v0:
+                filter: { voltage_count: 2 }
+                draw:
+                    powerline2v0:
+                        color: function() { return global.lookup_voltage_color(feature, 0) }
+                        order: 500
 
-        powerline3v0:
-            filter: { kind: [line, minor_line], not: { frequency: "0" }, voltage_count: 3 }
-            draw:
-                powerline3v0:
-                    color: function() { return global.grid_color(feature.grid, global.lookup_voltage_color(feature.voltage_normalized.split(';')[0])) }
-                    order: 500
+            powerline2v1:
+                filter: { voltage_count: 2 }
+                draw:
+                    powerline2v1:
+                        color: function() { return global.lookup_voltage_color(feature, 1) }
+                        order: 499
 
-        powerline3v1:
-            filter: { kind: [line, minor_line], not: { frequency: "0" }, voltage_count: 3 }
-            draw:
-                powerline3v1:
-                    color: function() { return global.grid_color(feature.grid, global.lookup_voltage_color(feature.voltage_normalized.split(';')[1])) }
-                    order: 499
+            powerline3v0:
+                filter: { voltage_count: 3 }
+                draw:
+                    powerline3v0:
+                        color: function() { return global.lookup_voltage_color(feature, 0) }
+                        order: 500
 
-        powerline3v2:
-            filter: { kind: [line, minor_line], not: { frequency: "0" }, voltage_count: 3 }
-            draw:
-                powerline3v2:
-                    color: function() { return global.grid_color(feature.grid, global.lookup_voltage_color(feature.voltage_normalized.split(';')[2])) }
-                    order: 499
+            powerline3v1:
+                filter: { voltage_count: 3 }
+                draw:
+                    powerline3v1:
+                        color: function() { return global.lookup_voltage_color(feature, 1) }
+                        order: 499
 
-        powerlinehvdc:
-            filter: { kind: [line, minor_line], frequency: "0" }
-            draw:
-                powerline:
-                    color: function() { return global.grid_color(feature.grid, global.hvdc_color) }
-                    order: 500
+            powerline3v2:
+                filter: { voltage_count: 3 }
+                draw:
+                    powerline3v2:
+                        color: function() { return global.lookup_voltage_color(feature, 2) }
+                        order: 499
 
         powercable:
             filter: { kind: cable }
             draw:
                 powercable:
-                    color: |
-                        function() { return global.grid_color(feature.grid, feature.frequency == "0" ? global.hvdc_color : global.lookup_voltage_color(feature.max_voltage)) }
+                    color: function() { return global.lookup_voltage_color(feature) }
                     order: 500
 
         linelabel:
