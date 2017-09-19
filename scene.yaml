@@ -7,11 +7,29 @@ import:
 global:
     sdk_mapzen_api_key: mapzen-BtoKQDi
 
-    black_color:                [0.650,0.650,0.650]
-    dark_gray_color:            [0.650,0.650,0.650]
-    dark_color:                 [0.680,0.680,0.680]
-    mid_color:                  [0.722,0.722,0.722]
-    midlight_color:             [0.788,0.788,0.788]
+    black_color:                [0.650,0.680,0.741]
+    dark_color:                 [0.575,0.599,0.653]
+    mid_color:                  [0.495,0.517,0.558]
+    midlight_color:             [0.418,0.434,0.465]
+    light_color:                [0.333,0.343,0.367]
+    lighter_color:              [0.254,0.258,0.272]
+    lightest_color:             [0.212,0.216,0.225]
+    ultralight_color:           [0.185,0.189,0.197]
+    offwhite_color:             [0.169,0.173,0.176]
+    white_color:                [0.153,0.157,0.161]
+    transparent:                [0.380,0.394,0.422,0.250]
+    route_line:                 [0.000,0.500,1.000]
+
+    ultradark_gray_color:       [0.898,0.898,0.898]
+    darkest_gray_color:         [0.800,0.800,0.800]
+    darker_gray_color:          [0.749,0.749,0.749]
+    dark_gray_color:            [0.675,0.675,0.675]
+    mid_gray_color:             [0.600,0.600,0.600]
+    gray_color:                 [0.502,0.502,0.502]
+    light_gray_color:           [0.400,0.400,0.400]
+    lighter_gray_color:         [0.333,0.333,0.333]
+    lightest_gray_color:        [0.298,0.298,0.298]
+    gray_offwhite_color:        [0.259,0.259,0.259]
 
     voltage_missing_color: [0.55,0.55,0.55]
     voltage_unknown_color: [0.33,0.33,0.33]
@@ -125,7 +143,7 @@ styles:
                 size: [[9, 8px], [20, 16px]]
                 family: global.text_font_family
                 weight: normal
-                fill: black
+                fill: '#ccc'
                 stroke: { color: global.white_color, width: 3px }
 
     powerline:
