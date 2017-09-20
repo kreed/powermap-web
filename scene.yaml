@@ -212,7 +212,7 @@ layers:
             filter: { kind: [line, minor_line] }
 
             powerline0v:
-                filter: { voltage: false }
+                filter: { voltage_count: 0 }
                 draw:
                     powerline:
                         color: global.voltage_missing_color
@@ -313,7 +313,7 @@ layers:
                     order: 400
 
         substationlabel:
-            filter: { kind: substation, label_placement: true, $zoom: { min: 10 } }
+            filter: { kind: substation, label_placement: true, name: true, $zoom: { min: 10 } }
             draw:
                 label:
                     buffer: 1px
@@ -324,30 +324,32 @@ layers:
                     text_source: |
                         function() {
                             var a = [];
-                            if (feature.name) a.push(feature.name);
+                            a.push(feature.name);
                             if (feature.voltage) a.push(feature.voltage.split(';').map(global.pretty_print_voltage).join('; '));
                             return a.join(' ');
                         }
 
         plantlabel:
-            filter: { kind: plant, label_placement: true }
+            filter: { kind: plant, name: true, label_placement: true }
             draw:
                 label:
                     buffer: 1px
                     repeat_distance: 0px
                     priority: 20
+                    priority: function() { return -feature.capacity; }
                     font:
                         size: [[9, 11px], [20, 20px]]
                     text_source: |
                         function() {
                             var a = [];
-                            if (feature.name) a.push(feature.name);
-                            if (feature.capacity) a.push(feature.capacity);
+                            a.push(feature.name);
+                            if (feature.capacity) a.push((feature.capacity / 1000000.0) + ' MW');
+                            if ($zoom >= 9 && feature.fuel) a.push(feature.fuel);
                             return a.join(' ');
                         }
 
         generatorlabel:
-            filter: { kind: generator, $zoom: { min: 15 } }
+            filter: { kind: generator, $zoom: { min: 12 } }
             draw:
                 label:
                     buffer: 1px
@@ -358,7 +360,7 @@ layers:
                         function() {
                             var a = [];
                             if (feature.name) a.push(feature.name);
-                            if (feature.capacity) a.push(feature.capacity);
+                            if (feature.capacity) a.push((feature.capacity / 1000000.0) + ' MW');
                             return a.join(' ');
                         }
 
