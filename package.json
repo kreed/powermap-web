@@ -1,0 +1,33 @@
+{
+  "name": "powermap-web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server --progress --colors",
+    "build": "webpack -p"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "leaflet": "",
+    "leaflet-hash": "^0.2.1",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "tangram": "https://github.com/tangrams/tangram#v0.13.3"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "css-loader": "^0.28.7",
+    "file-loader": "^0.11.2",
+    "style-loader": "^0.18.2",
+    "url-loader": "^0.5.9",
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.8.2"
+  }
+}

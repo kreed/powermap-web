@@ -1,110 +1,12 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
-<meta charset="utf-8">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>powermap</title>
-<link rel="stylesheet" href="//unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
-<style>
-html, body {
-	width: 100%;
-	height: 100%;
-	margin: 0;
-	padding: 0;
-}
-body {
-	display: flex;
-	flex-direction: column;
-}
-#map {
-	flex-grow: 1;
-}
-</style>
 </head>
 <body>
-<div id='checks'>
-	<label><input type="checkbox" id="check_lines" checked="yes"> Show powerlines</label>
-	<label><input type="checkbox" id="check_grid"> Highlight ERCOT lines</label>
-	<label><input type="checkbox" id="check_rtm"> Show ERCOT real-time market</label>
-</div>
-<div id="map"></div>
-<script src="//unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
-<script src="//unpkg.com/leaflet-hash@0.2.1/leaflet-hash.js"></script>
-<script src="//mapzen.com/tangram/0.13.2/tangram.min.js"></script>
-<script>
-map = (function () {
-	'use strict';
-
-	var map_start_location = [30.55, -98.34, 6];
-
-	var url_hash = window.location.hash.slice(1, window.location.hash.length).split('/');
-
-	if (url_hash.length == 3) {
-		map_start_location = [url_hash[1],url_hash[2],url_hash[0]];
-		// convert from strings
-		map_start_location = map_start_location.map(Number);
-	}
-
-	var map = L.map('map',
-		{"keyboardZoomOffset" : .05}
-	);
-
-	var layer = Tangram.leafletLayer({
-		scene: 'scene.yaml',
-		attribution: '<a href="//mapzen.com/tangram" target="_blank" rel="noopener">Tangram</a> | &copy; OSM contributors | <a href="//mapzen.com/" target="_blank" rel="noopener">Mapzen</a>'
-	});
-
-	window.layer = layer;
-	var scene = layer.scene;
-	window.scene = scene;
-
-	// setView expects format ([lat, long], zoom)
-	map.setView(map_start_location.slice(0, 3), map_start_location[2]);
-
-	var hash = new L.Hash(map);
-
-	window.addEventListener('load', function () {
-		layer.on('init', function() {
-			var grid_check = document.getElementById('check_grid');
-			grid_check.addEventListener('change', function(e) {
-				var checked = e.target.checked;
-				scene.config.global.ercotgrid = checked;
-				scene.updateConfig();
-			});
-
-			document.getElementById('check_rtm').addEventListener('change', function(e) {
-				var checked = e.target.checked;
-				scene.config.layers.ercotrtm.enabled = checked;
-				scene.updateConfig();
-			});
-
-			function onMapClick(selection) {
-				if (selection.feature) {
-					var latlng = selection.leaflet_event.latlng;
-					L.popup()
-						.setLatLng(latlng)
-						.setContent(selection.feature.properties.description)
-						.openOn(map);
-				}
-			}
-
-			layer.setSelectionEvents({
-				click: onMapClick
-			});
-
-			document.getElementById('check_lines').addEventListener('change', function(e) {
-				var checked = e.target.checked;
-				scene.config.layers['power-line'].enabled = checked;
-				scene.updateConfig();
-				grid_check.disabled = !checked;
-			});
-		});
-		layer.addTo(map);
-	});
-
-	return map;
-}());
-</script>
+<div id="root"></div>
+<script src="bundle.js"></script>
 </body>
 </html>
