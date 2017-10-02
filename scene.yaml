@@ -108,9 +108,9 @@ global:
             if (feature.frequency == "0") {
                 color = global.hvdc_color;
             } else {
-                var color = global.voltage_unknown_color;
                 if (split != undefined) v = v.split(';')[split];
-                color = global.voltage_colors[v];
+                var color = global.voltage_colors[v];
+                if (!color) color = global.voltage_unknown_color;
             }
 
             if (global.ercotgrid && feature.grid != 'ercot') {
