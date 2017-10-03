@@ -37,7 +37,7 @@ export default class Map extends React.Component {
 			map_start_location = map_start_location.map(Number);
 		}
 
-		const map = L.map(this.mapEl);
+		const map = L.map(this.mapEl, { zoomControl: false });
 		const layer = Tangram.leafletLayer({
 			scene: process.env.PUBLIC_URL + '/scene.yaml',
 			attribution: '<a href="//mapzen.com/tangram" target="_blank" rel="noopener">Tangram</a> | &copy; OSM contributors | <a href="//mapzen.com/" target="_blank" rel="noopener">Mapzen</a>'
@@ -66,17 +66,21 @@ export default class Map extends React.Component {
 		new L.Hash(map);
 	}
 
-	render() {
-		if (this._layer) {
+	componentWillReceiveProps(nextProps) {
+		if (this._layer && this._layer.scene && this._layer.scene.config) {
 			const scene = this._layer.scene;
-			scene.config.layers['power-line'].enabled = this.props.lines;
-			scene.config.global.ercotgrid = this.props.grid;
-			scene.config.layers.ercotrtm.enabled = this.props.rtm;
+			scene.config.layers['power-line'].enabled = nextProps.lines;
+			scene.config.global.ercotgrid = nextProps.grid;
+			scene.config.layers.ercotrtm.enabled = nextProps.rtm;
 			scene.updateConfig();
 		}
+	}
 
+	render() {
 		return (
-			<div ref={(ref) => {this.mapEl = ref }} />
+			<div ref={(ref) => {this.mapEl = ref }}>
+				{this.props.children}
+			</div>
 		);
 	}
 }

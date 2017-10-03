@@ -1,45 +1,23 @@
 import React from 'react';
-import Map from './Map';
-import Checkbox from './Checkbox';
+import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom';
+import { Menu, Responsive } from 'semantic-ui-react'
 
-export default class App extends React.Component {
-	state = {
-		linesChecked: true,
-		gridChecked: false,
-		rtmChecked: false
-	}
+import Home from './Home';
 
-	linesChecked = () => {
-		this.setState(prevState => ({
-			linesChecked: !prevState.linesChecked
-		}));
-	}
-
-	gridChecked = () => {
-		this.setState(prevState => ({
-			gridChecked: !prevState.gridChecked
-		}));
-	}
-
-	rtmChecked = () => {
-		this.setState(prevState => ({
-			rtmChecked: !prevState.rtmChecked
-		}));
-	}
-
-	render() {
-		return (
-			<div>
-				<div id="checks">
-					<Checkbox label="Show powerlines" checked={this.state.linesChecked} handler={this.linesChecked} />
-					<Checkbox label="Highlight ERCOT lines" checked={this.state.gridChecked} handler={this.gridChecked} />
-					<Checkbox label="Show ERCOT real-time market" checked={this.state.rtmChecked} handler={this.rtmChecked} />
-				</div>
-				<Map
-					lines={this.state.linesChecked}
-					grid={this.state.gridChecked}
-					rtm={this.state.rtmChecked} />
+const App = () => {
+	return (
+		<Router>
+			<div className='flex-container'>
+				<Menu inverted compact attached='top'>
+					<Responsive as={Menu.Item} header minWidth={700}>OpenStreetMap power infrastructure</Responsive>
+					<Menu.Item as={NavLink} activeClassName="active" to="/">Map</Menu.Item>
+					<Menu.Item as={NavLink} activeClassName="active" to="/tpit">ERCOT project tracking</Menu.Item>
+					<Menu.Item as={NavLink} activeClassName="active" to="/about">About</Menu.Item>
+				</Menu>
+				<Route exact path="/" component={Home} />
 			</div>
-		);
-	}
+		</Router>
+	);
 }
+
+export default App;

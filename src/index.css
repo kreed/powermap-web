@@ -1,14 +1,23 @@
-html, body, #root, #root>div {
+html, body, #root, .flex-container {
 	width: 100%;
 	height: 100%;
-	margin: 0;
-	padding: 0;
-	font-family: sans-serif;
 }
-#root>div {
+.flex-container {
 	display: flex;
 	flex-direction: column;
 }
 .leaflet-container {
 	flex-grow: 1;
+}
+.ui.map-control {
+	position: absolute;
+	left: 5px;
+	top: 5px;
+	z-index: 1000;
+}
+.ui.inverted .ui.toggle.checkbox label, .ui.inverted .ui.toggle.checkbox input:checked~label {
+	color: white !important;
+}
+.ui.segment.accordion .title {
+	padding: 0
 }
