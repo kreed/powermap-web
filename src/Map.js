@@ -31,7 +31,7 @@ export default class Map extends React.Component {
 		var map_start_location = [30.55, -98.34, 6];
 		const url_hash = window.location.hash.slice(1, window.location.hash.length).split('/');
 
-		if (url_hash.length == 3) {
+		if (url_hash.length === 3) {
 			map_start_location = [url_hash[1],url_hash[2],url_hash[0]];
 			// convert from strings
 			map_start_location = map_start_location.map(Number);
@@ -39,7 +39,7 @@ export default class Map extends React.Component {
 
 		const map = L.map(this.mapEl);
 		const layer = Tangram.leafletLayer({
-			scene: 'scene.yaml',
+			scene: process.env.PUBLIC_URL + '/scene.yaml',
 			attribution: '<a href="//mapzen.com/tangram" target="_blank" rel="noopener">Tangram</a> | &copy; OSM contributors | <a href="//mapzen.com/" target="_blank" rel="noopener">Mapzen</a>'
 		});
 

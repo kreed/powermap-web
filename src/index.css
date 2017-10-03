@@ -3,6 +3,7 @@ html, body, #root, #root>div {
 	height: 100%;
 	margin: 0;
 	padding: 0;
+	font-family: sans-serif;
 }
 #root>div {
 	display: flex;
