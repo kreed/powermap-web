@@ -38,9 +38,10 @@ export default class Map extends React.Component {
 		}
 
 		const map = L.map(this.mapEl, { zoomControl: false });
+		map.attributionControl.setPrefix(false);
 		const layer = Tangram.leafletLayer({
 			scene: process.env.PUBLIC_URL + '/scene.yaml',
-			attribution: '<a href="//mapzen.com/tangram" target="_blank" rel="noopener">Tangram</a> | &copy; OSM contributors | <a href="//mapzen.com/" target="_blank" rel="noopener">Mapzen</a>'
+			attribution: '&copy; <a href="//www.openstreetmap.org/">OpenStreetMap contributors</a>'
 		});
 
 		function onMapClick(selection) {
