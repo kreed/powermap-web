@@ -1,6 +1,6 @@
 {
   "name": "powermap",
-  "homepage": "https://kreed.org/power/",
+  "homepage": "https://kreed.org/power",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -17,6 +17,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "pkg": "npm run build && tar --transform 's|^build/|power/|' -cf powermap.tar.xz build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }
