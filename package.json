@@ -18,7 +18,7 @@
     "build-css": "lessc --include-path=node_modules/semantic-ui-less:semantic/a/b src/semantic.less src/semantic.css",
     "start": "npm run build-css && react-scripts start",
     "build": "npm run build-css && react-scripts build",
-    "pkg": "npm run build && tar --transform 's|^build/|power/|' -cf powermap.tar.xz build",
+    "pkg": "npm run build && tar --transform 's|^build|power|' -cf powermap.tar.xz build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
