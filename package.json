@@ -10,15 +10,19 @@
     "react-dom": "^16.0.0",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.0.14",
-    "semantic-ui-css": "^2.2.12",
+    "semantic-ui-less": "^2.2.12",
     "semantic-ui-react": "^0.74.2",
     "tangram": "git+https://github.com/kreed/tangram.git#webworkify"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build-css": "lessc --include-path=node_modules/semantic-ui-less:semantic/a/b src/semantic.less src/semantic.css",
+    "start": "npm run build-css && react-scripts start",
+    "build": "npm run build-css && react-scripts build",
     "pkg": "npm run build && tar --transform 's|^build/|power/|' -cf powermap.tar.xz build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "less": "^2"
   }
 }

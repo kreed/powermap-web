@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'leaflet/dist/leaflet.css';
-import 'semantic-ui-css/semantic.min.css';
+import './semantic.css';
 import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';

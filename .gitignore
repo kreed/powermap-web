@@ -6,8 +6,10 @@
 # testing
 /coverage
 
-# production
+# build output
 /build
+/src/semantic.css
+*.tar.xz
 
 # misc
 .DS_Store
