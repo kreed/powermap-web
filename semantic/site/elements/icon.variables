@@ -1,0 +1,3 @@
+// disable everything but woff format
+@fallbackSRC: url("@{fontPath}/@{fontName}.woff") format('woff');
+@src: url("@{fontPath}/@{fontName}.woff") format('woff');
