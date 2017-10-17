@@ -134,7 +134,7 @@ sources:
     power:
         type: MVT
         max_zoom: 16
-        url: https://kreed.org/power/{z}/{x}/{y}.pbf
+        url: https://power.kreed.org/tiles/power/{z}/{x}/{y}.pbf
 
     ercotrtm:
         type: GeoJSON

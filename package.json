@@ -1,6 +1,6 @@
 {
   "name": "powermap",
-  "homepage": "https://kreed.org/power",
+  "homepage": "https://power.kreed.org",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

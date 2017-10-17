@@ -7,7 +7,7 @@ import About from './About';
 
 const App = () => {
 	return (
-		<Router basename={process.env.PUBLIC_URL}>
+		<Router>
 			<div className='flex-container'>
 				<Menu inverted compact attached='top'>
 					<Responsive as={Menu.Item} header minWidth={700}>OpenStreetMap power infrastructure</Responsive>
