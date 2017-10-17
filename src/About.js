@@ -10,7 +10,7 @@ const About = () => {
 			<Header as='h2'>Mapping</Header>
 			<p>Interested in adding data to this map? Head over to <a href='https://www.openstreetmap.org/'>OpenStreetMap</a> and click Edit to start mapping.</p>
 			<Header as='h2'>Software</Header>
-			<p>powermap renders vector tiles client-side. Vector tiles are still expiremental for OpenStreetMap and most of the software is immature. The software stack has gone through several iterations. The following is what I've settled on for the moment.</p>
+			<p>powermap renders vector tiles client-side thanks to the following components. Vector tiles are relatively new to OSM, and the software is still immature. I've gone through a few iterations of component choices as I work on getting things running smoothly. This is what I've settled on for the moment.</p>
 			<List bulleted>
 				<List.Item><a href='https://gitlab.com/osm-c-tools/osmctools'>osmupdate/osmconvert</a> download, update and filter OpenStreetMap data</List.Item>
 				<List.Item><a href='https://github.com/openstreetmap/osm2pgsql'>osm2pgsql</a> (with a hack to support site relations) imports data to the database</List.Item>
