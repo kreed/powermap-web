@@ -240,8 +240,9 @@ let PowerStyle = class PowerStyle {
 				},
 			}
 		});
+		var map = this.map;
 		this.map.on('click', function (e) {
-			var features = this.map.queryRenderedFeatures(e.point, { layers: ['ercot_rtm'] });
+			var features = map.queryRenderedFeatures(e.point, { layers: ['ercot_rtm'] });
 
 			if (!features.length) {
 				return;
@@ -254,7 +255,7 @@ let PowerStyle = class PowerStyle {
 			new mapboxgl.Popup()
 				.setLngLat(feature.geometry.coordinates)
 				.setHTML(feature.properties.description)
-				.addTo(this.map);
+				.addTo(map);
 		});
 	}
 
