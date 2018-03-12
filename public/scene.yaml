@@ -1,11 +1,11 @@
 import:
-    - https://mapzen.com/carto/refill-style/9/refill-style.zip
-    - https://mapzen.com/carto/refill-style/9/themes/detail-8.zip
-    - https://mapzen.com/carto/refill-style/9/themes/label-2.zip
-    - https://mapzen.com/carto/refill-style/9/themes/color-zinc.zip
+    - https://www.nextzen.org/carto/refill-style/11/refill-style.zip
+    - https://www.nextzen.org/carto/refill-style/11/themes/detail-8.zip
+    - https://www.nextzen.org/carto/refill-style/11/themes/label-2.zip
+    - https://www.nextzen.org/carto/refill-style/11/themes/color-zinc.zip
 
 global:
-    sdk_mapzen_api_key: mapzen-BtoKQDi
+    sdk_api_key: BD3-WtQZSKGu5f-fsgUOKw
 
     black_color:                [0.325,0.340,0.370]
     dark_color:                 [0.287,0.299,0.327]
