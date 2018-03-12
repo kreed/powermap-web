@@ -4,15 +4,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "leaflet": "^1.2.0",
-    "leaflet-hash": "^0.2.1",
+    "mapbox-gl": "^0.44.1",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.0.14",
     "semantic-ui-less": "^2.2.12",
-    "semantic-ui-react": "^0.74.2",
-    "tangram": "git+https://github.com/kreed/tangram.git#webworkify"
+    "semantic-ui-react": "^0.74.2"
   },
   "scripts": {
     "build-css": "lessc --include-path=node_modules/semantic-ui-less:semantic/a/b src/semantic.less src/semantic.css",
