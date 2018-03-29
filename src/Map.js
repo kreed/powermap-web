@@ -9,9 +9,9 @@ let Map = class Map extends React.Component {
 
 	componentWillReceiveProps(nextProps) {
 		if (this.style) {
-			if (this.props.lines != nextProps.lines || this.props.grid != nextProps.grid)
+			if (this.props.lines !== nextProps.lines || this.props.grid !== nextProps.grid)
 				this.style.set_show_powerlines(nextProps.lines, nextProps.grid);
-			if (this.props.rtm != nextProps.rtm)
+			if (this.props.rtm !== nextProps.rtm)
 				this.style.set_ercot_rtm(nextProps.rtm);
 		}
 	}
