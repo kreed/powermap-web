@@ -129,7 +129,7 @@ let PowerStyle = class PowerStyle {
 				"text-offset": [0,0],
 				"text-rotation-alignment": "map",
 				"text-anchor": "bottom",
-				"text-field": "{label}"
+				"text-field": "{voltage_pretty} {cables_pretty}"
 			},
 			"paint": {
 				"text-halo-color": "#fff",
@@ -166,7 +166,7 @@ let PowerStyle = class PowerStyle {
 				],
 				"symbol-placement": "point",
 				"text-padding": 3,
-				"text-field": "{name} {generator:output:electricity}",
+				"text-field": "{name} {capacity_pretty}",
 				"text-letter-spacing": 0.1,
 				"text-max-width": 7
 			},
@@ -205,7 +205,7 @@ let PowerStyle = class PowerStyle {
 				],
 				"symbol-placement": "point",
 				"text-padding": 3,
-				"text-field": "{name}",
+				"text-field": "{name} {voltage_pretty}",
 				"text-letter-spacing": 0.1,
 				"text-max-width": 7
 			},
@@ -238,7 +238,7 @@ let PowerStyle = class PowerStyle {
 				"text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
 				"symbol-placement": "point",
 				"text-padding": 3,
-				"text-field": "{label}",
+				"text-field": "{name} {capacity_pretty} {fuel}",
 				"text-letter-spacing": 0.1,
 				"text-max-width": 7
 			},
