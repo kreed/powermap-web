@@ -24,6 +24,7 @@ let Map = class Map extends React.Component {
 			center: [-98.34, 30.55],
 			zoom: 6
 		});
+		window.map = this.map;
 
 		this.map.on('load', () => {
 			this.style = new PowerStyle(this.map, "https://power.kreed.org/tiles/power/{z}/{x}/{y}.pbf");

@@ -1,8 +1,7 @@
 import mapboxgl from 'mapbox-gl'
 
 var colors = {
-	"#ccc": ["none"],
-	"#444": ["unknown"],
+	"#ccc": ["unknown"],
 	"#75fff3": ["HVDC"],
 	"#d07b87": ["1000000"],
 	"#882e72": ["800000"],
@@ -265,161 +264,207 @@ let PowerStyle = class PowerStyle {
 		this.map.setPaintProperty('ercot_rtm', 'circle-opacity', visible ? 1 : 0);
 	}
 
-	powerline_group(pfx, base) {
-		if (window.location.search) {
-			var v = window.location.search.substring(1);
-			var comb = voltage_combos.filter(function (e) { return e.indexOf(v) >= 0 });
-			base.filter.push(["in", "voltage", v].concat(comb));
+	powerline_base(pfx, filter) {
+		var lines = [{
+			"type": "line",
+			"source": "power",
+			"source-layer": "power-line",
+			"filter": ["all",
+				["==", "kind", "cable"],
+				["!=", "frequency", "0"]
+			],
+			"layout": {
+				"line-join": "miter"
+			},
+			"paint": {
+				"line-width": {
+					"base": 1.5,
+					"stops": [
+						[8, 1.5],
+						[12, 3]
+					]
+				},
+				"line-dasharray": [2, 2]
+			},
+			"id": "cable"
+		}, {
+			"type": "line",
+			"source": "power",
+			"source-layer": "power-line",
+			"filter": ["all",
+				["==", "kind", "cable"],
+				["has", "voltage"],
+				["==", "frequency", "0"]
+			],
+			"layout": {
+				"line-join": "miter"
+			},
+			"paint": {
+				"line-width": {
+					"base": 1.5,
+					"stops": [
+						[8, 1.5],
+						[12, 3]
+					]
+				},
+				"line-dasharray": [2, 2]
+			},
+			"id": "cable_hvdc"
+		}, {
+			"type": "line",
+			"source": "power",
+			"source-layer": "power-line",
+			"filter": ["all",
+				["==", "kind", "line"],
+				["in", "voltage"].concat(voltage_combos),
+			],
+			"layout": {
+				"line-join": "miter"
+			},
+			"paint": {
+				"line-width": {
+					"base": 1.5,
+					"stops": [
+						[8, 1.5],
+						[12, 3]
+					]
+				},
+				"line-dasharray": [2, 2]
+			},
+			"id": "line_primary"
+		}, {
+			"type": "line",
+			"source": "power",
+			"source-layer": "power-line",
+			"filter": ["all",
+				["==", "kind", "line"],
+				["in", "voltage"].concat(voltage_combos),
+			],
+			"layout": {
+				"line-join": "miter"
+			},
+			"paint": {
+				"line-width": {
+					"base": 1.5,
+					"stops": [
+						[8, 1.5],
+						[12, 3]
+					]
+				},
+				"line-dasharray": [0, 2, 2]
+			},
+			"id": "line_secondary"
+		}, {
+			"type": "line",
+			"source": "power",
+			"source-layer": "power-line",
+			"filter": ["all",
+				["==", "kind", "line"],
+				["!in", "voltage"].concat(voltage_combos),
+				["!=", "frequency", "0"]
+			],
+			"layout": {
+				"line-join": "miter"
+			},
+			"paint": {
+				"line-width": {
+					"base": 1.5,
+					"stops": [
+						[8, 1.5],
+						[12, 3]
+					]
+				},
+			},
+			"id": "line"
+		}, {
+			"type": "line",
+			"source": "power",
+			"source-layer": "power-line",
+			"filter": ["all",
+				["==", "kind", "line"],
+				["has", "voltage"],
+				["==", "frequency", "0"]
+			],
+			"layout": {
+				"line-join": "miter"
+			},
+			"paint": {
+				"line-width": {
+					"base": 1.5,
+					"stops": [
+						[8, 1.5],
+						[12, 3]
+					]
+				},
+			},
+			"id": "line_hvdc"
+		}];
+
+		for (var line in lines) {
+			var e = lines[line];
+			e.id = pfx + e.id;
+			e.filter.push(filter);
+			this.map.addLayer(e, "powerline label");
+		}
+	}
+
+	powerline_colors(pfx) {
+		function color(c) {
+			return c;
 		}
 
-		var cable_base = JSON.parse(JSON.stringify(base));
-		cable_base.filter.push(["==", "kind", "cable"]);
-		cable_base.paint['line-dasharray'] = [2, 2];
-
-		var cable_novoltage = JSON.parse(JSON.stringify(cable_base));
-		cable_novoltage.filter.push(["!has", "voltage"]);
-		cable_novoltage.id = pfx + "cable no voltage";
-		cable_novoltage.paint['line-color'] = voltage_colors.none;
-		cable_novoltage.minzoom = 9;
-		this.map.addLayer(cable_novoltage, "powerline label");
-
-		var cable = JSON.parse(JSON.stringify(cable_base));
-		cable.id = pfx + "power cable";
-		cable.filter = cable.filter.concat([
-			["has", "voltage"],
-			["!=", "frequency", "0"],
-		]);
-		var max_stops = [];
-		max_stops.push([0, voltage_colors.unknown])
+		var line_stops = [];
 		for (var e in voltage_colors) {
 			var n = Number(e);
 			if (n > 0) {
-				max_stops.push([n, voltage_colors[e]]);
+				line_stops.push([e, color(voltage_colors[e])]);
+				line_stops.push([e + ';0', color(voltage_colors[e])]);
 			}
 		}
-		cable.paint["line-color"] = {
+		this.map.setPaintProperty(pfx + 'cable', "line-color", {
 			"property": "max_voltage",
 			"type": "categorical",
-			"stops": max_stops
-		}
-		this.map.addLayer(cable, "powerline label");
-
-		var cable_hvdc = JSON.parse(JSON.stringify(cable_base));
-		cable_hvdc.id = pfx + "cable_hvdc";
-		cable_hvdc.filter = cable_hvdc.filter.concat([
-			["has", "voltage"],
-			["==", "frequency", "0"],
-		]);
-		cable_hvdc.paint["line-color"] = voltage_colors.HVDC;
-		this.map.addLayer(cable_hvdc, "powerline label");
-
-		base.filter.push(["==", "kind", "line"]);
-
-		var novoltage = JSON.parse(JSON.stringify(base));
-		novoltage.filter.push(["!has", "voltage"]);
-		novoltage.id = pfx + "line_no_voltage";
-		novoltage.paint['line-color'] = voltage_colors.none;
-		novoltage.minzoom = 9;
-		this.map.addLayer(novoltage, "powerline label");
-
-		var primary = JSON.parse(JSON.stringify(base));
-		primary.filter.push(["in", "voltage"].concat(voltage_combos));
-		primary.paint["line-color"] = {
+			"default": color(voltage_colors.unknown),
+			"stops": line_stops
+		});
+		this.map.setPaintProperty(pfx + 'line', "line-color", {
 			"property": "voltage",
-			"type": "categorical"
-		}
-		var secondary = JSON.parse(JSON.stringify(primary));
-		var primary_stops = [['unknown', voltage_colors.unknown]];
-		var secondary_stops = [['unknown', voltage_colors.unknown]];
+			"type": "categorical",
+			"default": color(voltage_colors.unknown),
+			"stops": line_stops
+		});
+
+		var primary_stops = [];
+		var secondary_stops = [];
 		for (var i = 0; i < voltage_combos.length; ++i) {
 			var voltages = voltage_combos[i].split(';');
 			if (!voltage_colors.hasOwnProperty(voltages[0])) console.log('missing', voltages[0]);
 			if (!voltage_colors.hasOwnProperty(voltages[1])) console.log('missing', voltages[1]);
-			primary_stops.push([voltage_combos[i], voltage_colors[voltages[0]]]);
-			secondary_stops.push([voltage_combos[i], voltage_colors[voltages[1]]]);
+			primary_stops.push([voltage_combos[i], color(voltage_colors[voltages[0]])]);
+			secondary_stops.push([voltage_combos[i], color(voltage_colors[voltages[1]])]);
 		}
-		primary.id = pfx + 'powerline primary';
-		primary.paint['line-color'].stops = primary_stops;
-		primary.paint['line-dasharray'] = [2, 2];
-		secondary.id = pfx + 'powerline secondary';
-		secondary.paint['line-color'].stops = secondary_stops;
-		secondary.paint['line-dasharray'] = [0, 2, 2];
-		this.map.addLayer(primary, "powerline label");
-		this.map.addLayer(secondary, "powerline label");
-
-		var line = JSON.parse(JSON.stringify(base));
-		line.id = pfx + "power line";
-		line.filter = line.filter.concat([
-			["has", "voltage"],
-			["!in", "voltage"].concat(voltage_combos),
-			["!=", "frequency", "0"],
-		]);
-		var stops = [];
-		stops.push(['unknown', voltage_colors.unknown])
-		for (var e in voltage_colors) {
-			var n = Number(e);
-			if (n > 0) {
-				stops.push([e, voltage_colors[e]]);
-				stops.push([e + ';0', voltage_colors[e]]);
-			}
-		}
-		line.paint["line-color"] = {
+		this.map.setPaintProperty(pfx + 'line_primary', "line-color", {
 			"property": "voltage",
 			"type": "categorical",
-			"stops": stops
-		}
-		this.map.addLayer(line, "powerline label");
+			"default": color(voltage_colors.unknown),
+			"stops": primary_stops
+		});
+		this.map.setPaintProperty(pfx + 'line_secondary', "line-color", {
+			"property": "voltage",
+			"type": "categorical",
+			"default": color(voltage_colors.unknown),
+			"stops": secondary_stops
+		});
 
-		var hvdc = JSON.parse(JSON.stringify(base));
-		hvdc.id = pfx + "hvdc";
-		hvdc.filter = hvdc.filter.concat([
-			["has", "voltage"],
-			["==", "frequency", "0"],
-		]);
-		hvdc.paint["line-color"] = voltage_colors['HVDC']
-		this.map.addLayer(hvdc, "powerline label");
+		this.map.setPaintProperty(pfx + 'cable_hvdc', "line-color", color(voltage_colors.HVDC));
+		this.map.setPaintProperty(pfx + 'line_hvdc', "line-color", color(voltage_colors.HVDC));
 	}
 
 	powerlines() {
-		var base = {
-			"type": "line",
-			"source": "power",
-			"source-layer": "power-line",
-			"filter": [
-				"all",
-				["!=", "grid", "ercot"],
-			],
-			"layout": {
-				"line-join": "miter"
-			},
-			"paint": {
-				"line-width": {
-					"base": 1.5,
-					"stops": [[8,1.5],[12,3]]
-				},
-			}
-		}
-		this.powerline_group('otherline_', base);
-
-		base = {
-			"type": "line",
-			"source": "power",
-			"source-layer": "power-line",
-			"filter": [
-				"all",
-				["==", "grid", "ercot"],
-			],
-			"layout": {
-				"line-join": "miter"
-			},
-			"paint": {
-				"line-width": {
-					"base": 1.5,
-					"stops": [[8,1.5],[12,3]]
-				},
-			}
-		}
-		this.powerline_group('ercotline_', base);
+		this.powerline_base('otherline_', ["!=", "grid", "ercot"]);
+		this.powerline_base('ercotline_', ["==", "grid", "ercot"]);
+		this.powerline_colors('otherline_');
+		this.powerline_colors('ercotline_');
 	}
 
 	power_areas() {
