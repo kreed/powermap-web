@@ -1,32 +1,65 @@
 import mapboxgl from 'mapbox-gl'
 
-var colors = {
-	"#ccc": ["unknown"],
-	"#75fff3": ["HVDC"],
-	"#d07b87": ["1000000"],
-	"#882e72": ["800000"],
-	"#c640d9": ["765000", "750000"],
-	"#d659b7": ["735000", "660000"],
-	"#563389": ["525000", "500000", "450000"],
-	"#a1a442": ["440000", "420000", "400000"],
-	"#cb87a1": ["380000", "360000", "350000"],
-	"#c23e61": ["345000", "330000", "315000", "300000"],
-	"#e8601c": ["287000", "275000"],
-	"#f1932d": ["240000", "230000", "225000"],
-	"#cd4938": ["220000", "187000", "170000"],
-	"#1965b0": ["161000", "154000", "150000", "144000", "138000", "132000", "130000"],
-	"#7bafde": ["125000", "120000", "115000", "113000", "110000", "100000", "90000", "77000"],
-	"#4eb265": ["72000", "70000", "69000", "66000", "65000", "63000"],
-	"#818e38": ["60000", "55000", "50000", "46000"],
-	"#7e492d": ["35000", "34500", "33000", "22000", "20000"],
-};
-
-var voltage_colors = {};
-for (var color in colors) {
-	var voltages = colors[color];
-	for (var i = 0; i < voltages.length; ++i) {
-		voltage_colors[voltages[i]] = color;
-	}
+var unknown_voltage_color = [0.33,0.33,0.33];
+var hvdc_color = [0.459,1,0.953];
+var voltage_colors = {
+	1000000: [0.816,0.482,0.529],
+	800000: [0.533,0.18,0.447],
+	765000: [0.776,0.251,0.851],
+	750000: [0.776,0.251,0.851],
+	735000: [0.839,0.349,0.718],
+	660000: [0.839,0.349,0.718],
+	525000: [0.337,0.2,0.537],
+	500000: [0.337,0.2,0.537],
+	450000: [0.337,0.2,0.537],
+	440000: [0.631,0.643,0.259],
+	420000: [0.631,0.643,0.259],
+	400000: [0.631,0.643,0.259],
+	380000: [0.796,0.529,0.631],
+	360000: [0.796,0.529,0.631],
+	350000: [0.796,0.529,0.631],
+	345000: [0.761,0.243,0.38],
+	330000: [0.761,0.243,0.38],
+	315000: [0.761,0.243,0.38],
+	300000: [0.761,0.243,0.38],
+	287000: [0.91,0.376,0.11],
+	275000: [0.91,0.376,0.11],
+	240000: [0.945,0.576,0.176],
+	230000: [0.945,0.576,0.176],
+	225000: [0.945,0.576,0.176],
+	220000: [0.804,0.286,0.22],
+	187000: [0.804,0.286,0.22],
+	170000: [0.804,0.286,0.22],
+	161000: [0.098,0.396,0.69],
+	154000: [0.098,0.396,0.69],
+	150000: [0.098,0.396,0.69],
+	144000: [0.098,0.396,0.69],
+	138000: [0.098,0.396,0.69],
+	132000: [0.098,0.396,0.69],
+	130000: [0.098,0.396,0.69],
+	125000: [0.482,0.686,0.871],
+	120000: [0.482,0.686,0.871],
+	115000: [0.482,0.686,0.871],
+	113000: [0.482,0.686,0.871],
+	110000: [0.482,0.686,0.871],
+	100000: [0.482,0.686,0.871],
+	90000: [0.482,0.686,0.871],
+	77000: [0.482,0.686,0.871],
+	72000: [0.306,0.698,0.396],
+	70000: [0.306,0.698,0.396],
+	69000: [0.306,0.698,0.396],
+	66000: [0.306,0.698,0.396],
+	65000: [0.306,0.698,0.396],
+	63000: [0.306,0.698,0.396],
+	60000: [0.506,0.557,0.22],
+	55000: [0.506,0.557,0.22],
+	50000: [0.506,0.557,0.22],
+	46000: [0.506,0.557,0.22],
+	35000: [0.494,0.286,0.176],
+	34500: [0.494,0.286,0.176],
+	33000: [0.494,0.286,0.176],
+	22000: [0.494,0.286,0.176],
+	20000: [0.494,0.286,0.176],
 }
 
 var voltage_combos = [
@@ -408,9 +441,13 @@ let PowerStyle = class PowerStyle {
 		}
 	}
 
-	powerline_colors(pfx) {
+	powerline_colors(pfx, lighten) {
 		function color(c) {
-			return c;
+			if (lighten) {
+				return 'rgb(' + (c[0] + (1 - c[0]) / 2) * 255 + ',' + (c[1] + (1 - c[1]) / 2) * 255  + ',' + (c[2] + (1 - c[2]) / 2) * 255 + ')';
+			} else {
+				return 'rgb(' + c[0] * 255 + ',' + c[1] * 255 + ',' + c[2] * 255 + ')';
+			}
 		}
 
 		var line_stops = [];
@@ -424,13 +461,13 @@ let PowerStyle = class PowerStyle {
 		this.map.setPaintProperty(pfx + 'cable', "line-color", {
 			"property": "max_voltage",
 			"type": "categorical",
-			"default": color(voltage_colors.unknown),
+			"default": color(unknown_voltage_color),
 			"stops": line_stops
 		});
 		this.map.setPaintProperty(pfx + 'line', "line-color", {
 			"property": "voltage",
 			"type": "categorical",
-			"default": color(voltage_colors.unknown),
+			"default": color(unknown_voltage_color),
 			"stops": line_stops
 		});
 
@@ -446,18 +483,18 @@ let PowerStyle = class PowerStyle {
 		this.map.setPaintProperty(pfx + 'line_primary', "line-color", {
 			"property": "voltage",
 			"type": "categorical",
-			"default": color(voltage_colors.unknown),
+			"default": color(unknown_voltage_color),
 			"stops": primary_stops
 		});
 		this.map.setPaintProperty(pfx + 'line_secondary', "line-color", {
 			"property": "voltage",
 			"type": "categorical",
-			"default": color(voltage_colors.unknown),
+			"default": color(unknown_voltage_color),
 			"stops": secondary_stops
 		});
 
-		this.map.setPaintProperty(pfx + 'cable_hvdc', "line-color", color(voltage_colors.HVDC));
-		this.map.setPaintProperty(pfx + 'line_hvdc', "line-color", color(voltage_colors.HVDC));
+		this.map.setPaintProperty(pfx + 'cable_hvdc', "line-color", color(hvdc_color));
+		this.map.setPaintProperty(pfx + 'line_hvdc', "line-color", color(hvdc_color));
 	}
 
 	powerlines() {
@@ -521,11 +558,17 @@ let PowerStyle = class PowerStyle {
 		});
 	}
 
-	set_show_powerlines(show, highlight_ercot) {
+	set_highlight_ercot(highlight) {
+		if (highlight) {
+			this.powerline_colors('otherline_', true);
+		} else {
+			this.powerline_colors('otherline_');
+		}
+	}
+
+	set_show_powerlines(show) {
 		for (var layer in this.map.style._layers) {
-			if (layer.startsWith('otherline_')) {
-				this.map.setPaintProperty(layer, 'line-opacity', show ? (highlight_ercot ? 0.33 : 1) : 0);
-			} else if (layer.startsWith('ercotline_')) {
+			if (layer.startsWith('otherline_') || layer.startsWith('ercotline_')) {
 				this.map.setPaintProperty(layer, 'line-opacity', show ? 1 : 0);
 			}
 		}
