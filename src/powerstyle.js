@@ -62,48 +62,6 @@ var voltage_colors = {
 	20000: [0.494,0.286,0.176],
 }
 
-var voltage_combos = [
-	'500000;230000',
-	'500000;115000',
-	'400000;275000',
-	'400000;225000',
-	'400000;220000',
-	'400000;150000',
-	'400000;110000',
-	'380000;220000;110000',
-	'380000;220000',
-	'380000;132000',
-	'380000;110000',
-	'345000;230000',
-	'345000;161000',
-	'345000;138000',
-	'345000;115000',
-	'345000;69000',
-	'275000;154000',
-	'275000;66000',
-	'230000;34500',
-	'230000;138000',
-	'230000;115000',
-	'230000;69000',
-	'220000;150000',
-	'220000;132000',
-	'220000;115000',
-	'220000;110000',
-	'220000;66000',
-	'161000;69000',
-	'154000;66000',
-	'150000;70000',
-	'150000;60000',
-	'138000;69000',
-	'132000;66000',
-	'132000;55000',
-	'132000;50000',
-	'115000;69000',
-	'115000;34500',
-	'110000;20000',
-	'66000;22000'
-];
-
 let PowerStyle = class PowerStyle {
 	labels() {
 		this.map.addLayer({
@@ -349,7 +307,50 @@ let PowerStyle = class PowerStyle {
 			"source-layer": "power-line",
 			"filter": ["all",
 				["==", "kind", "line"],
-				["in", "voltage"].concat(voltage_combos),
+				["==", "voltage_count", 0]
+			],
+			"layout": {
+				"line-join": "miter"
+			},
+			"paint": {
+				"line-width": {
+					"base": 1.5,
+					"stops": [
+						[8, 1.5],
+						[12, 3]
+					]
+				},
+			},
+			"id": "line_0v"
+		}, {
+			"type": "line",
+			"source": "power",
+			"source-layer": "power-line",
+			"filter": ["all",
+				["==", "kind", "line"],
+				["==", "voltage_count", 1],
+				["!=", "frequency", "0"]
+			],
+			"layout": {
+				"line-join": "miter"
+			},
+			"paint": {
+				"line-width": {
+					"base": 1.5,
+					"stops": [
+						[8, 1.5],
+						[12, 3]
+					]
+				},
+			},
+			"id": "line_1v"
+		}, {
+			"type": "line",
+			"source": "power",
+			"source-layer": "power-line",
+			"filter": ["all",
+				["==", "kind", "line"],
+				["==", "voltage_count", 2],
 			],
 			"layout": {
 				"line-join": "miter"
@@ -371,7 +372,7 @@ let PowerStyle = class PowerStyle {
 			"source-layer": "power-line",
 			"filter": ["all",
 				["==", "kind", "line"],
-				["in", "voltage"].concat(voltage_combos),
+				["==", "voltage_count", 2],
 			],
 			"layout": {
 				"line-join": "miter"
@@ -387,28 +388,6 @@ let PowerStyle = class PowerStyle {
 				"line-dasharray": [0, 2, 2]
 			},
 			"id": "line_secondary"
-		}, {
-			"type": "line",
-			"source": "power",
-			"source-layer": "power-line",
-			"filter": ["all",
-				["==", "kind", "line"],
-				["!in", "voltage"].concat(voltage_combos),
-				["!=", "frequency", "0"]
-			],
-			"layout": {
-				"line-join": "miter"
-			},
-			"paint": {
-				"line-width": {
-					"base": 1.5,
-					"stops": [
-						[8, 1.5],
-						[12, 3]
-					]
-				},
-			},
-			"id": "line"
 		}, {
 			"type": "line",
 			"source": "power",
@@ -450,49 +429,43 @@ let PowerStyle = class PowerStyle {
 			}
 		}
 
-		var line_stops = [];
+		var expression_base = [];
 		for (var e in voltage_colors) {
 			var n = Number(e);
 			if (n > 0) {
-				line_stops.push([e, color(voltage_colors[e])]);
-				line_stops.push([e + ';0', color(voltage_colors[e])]);
+				expression_base.push(n);
+				expression_base.push(color(voltage_colors[e]));
 			}
 		}
-		this.map.setPaintProperty(pfx + 'cable', "line-color", {
-			"property": "max_voltage",
-			"type": "categorical",
-			"default": color(unknown_voltage_color),
-			"stops": line_stops
-		});
-		this.map.setPaintProperty(pfx + 'line', "line-color", {
-			"property": "voltage",
-			"type": "categorical",
-			"default": color(unknown_voltage_color),
-			"stops": line_stops
-		});
 
-		var primary_stops = [];
-		var secondary_stops = [];
-		for (var i = 0; i < voltage_combos.length; ++i) {
-			var voltages = voltage_combos[i].split(';');
-			if (!voltage_colors.hasOwnProperty(voltages[0])) console.log('missing', voltages[0]);
-			if (!voltage_colors.hasOwnProperty(voltages[1])) console.log('missing', voltages[1]);
-			primary_stops.push([voltage_combos[i], color(voltage_colors[voltages[0]])]);
-			secondary_stops.push([voltage_combos[i], color(voltage_colors[voltages[1]])]);
-		}
-		this.map.setPaintProperty(pfx + 'line_primary', "line-color", {
-			"property": "voltage",
-			"type": "categorical",
-			"default": color(unknown_voltage_color),
-			"stops": primary_stops
-		});
-		this.map.setPaintProperty(pfx + 'line_secondary', "line-color", {
-			"property": "voltage",
-			"type": "categorical",
-			"default": color(unknown_voltage_color),
-			"stops": secondary_stops
-		});
+		this.map.setPaintProperty(pfx + 'line_1v', "line-color", [
+			"match",
+			["number", ["get", "max_voltage"]],
+			...expression_base,
+			color(unknown_voltage_color)
+		]);
+		this.map.setPaintProperty(pfx + 'cable', "line-color", [
+			"match",
+			["number", ["get", "max_voltage"]],
+			...expression_base,
+			color(unknown_voltage_color)
+		]);
+		// TODO: whenever MVT supports array properties, we should use that here
+		// instead of separate keys. https://github.com/mapbox/vector-tile-spec/issues/75
+		this.map.setPaintProperty(pfx + 'line_primary', "line-color", [
+			"match",
+			["number", ["get", "voltage1"]],
+			...expression_base,
+			color(unknown_voltage_color)
+		]);
+		this.map.setPaintProperty(pfx + 'line_secondary', "line-color", [
+			"match",
+			["number", ["get", "voltage2"]],
+			...expression_base,
+			color(unknown_voltage_color)
+		]);
 
+		this.map.setPaintProperty(pfx + 'line_0v', "line-color", color(unknown_voltage_color));
 		this.map.setPaintProperty(pfx + 'cable_hvdc', "line-color", color(hvdc_color));
 		this.map.setPaintProperty(pfx + 'line_hvdc', "line-color", color(hvdc_color));
 	}
