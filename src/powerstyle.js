@@ -215,188 +215,43 @@ let PowerStyle = class PowerStyle {
 		this.map.setPaintProperty('ercot_rtm', 'circle-opacity', visible ? 1 : 0);
 	}
 
-	powerline_base(pfx, filter) {
-		var lines = [{
-			"type": "line",
-			"source": "power",
-			"source-layer": "power-line",
-			"filter": ["all",
-				["==", "kind", "cable"]
-			],
-			"layout": {
-				"line-join": "miter"
-			},
-			"paint": {
-				"line-width": {
-					"base": 1.5,
-					"stops": [
-						[8, 1.5],
-						[12, 3]
-					]
+	powerline_base(pfx, global_filter) {
+		var map = this.map;
+		function layer(name, filter, dash) {
+			var l = {
+				"type": "line",
+				"source": "power",
+				"source-layer": "power-line",
+				"filter": ["all",
+					global_filter,
+					...filter
+				],
+				"layout": {
+					"line-join": "miter"
 				},
-				"line-dasharray": [2, 2]
-			},
-			"id": "cable"
-		}, {
-			"type": "line",
-			"source": "power",
-			"source-layer": "power-line",
-			"filter": ["all",
-				["==", "kind", "line"],
-				["==", "voltage_count", 0]
-			],
-			"layout": {
-				"line-join": "miter"
-			},
-			"paint": {
-				"line-width": {
-					"base": 1.5,
-					"stops": [
-						[8, 1.5],
-						[12, 3]
-					]
+				"paint": {
+					"line-width": {
+						"base": 1.5,
+						"stops": [
+							[8, 1.5],
+							[12, 3]
+						]
+					},
 				},
-			},
-			"id": "line_0v"
-		}, {
-			"type": "line",
-			"source": "power",
-			"source-layer": "power-line",
-			"filter": ["all",
-				["==", "kind", "line"],
-				["==", "voltage_count", 1]
-			],
-			"layout": {
-				"line-join": "miter"
-			},
-			"paint": {
-				"line-width": {
-					"base": 1.5,
-					"stops": [
-						[8, 1.5],
-						[12, 3]
-					]
-				},
-			},
-			"id": "line_1v"
-		}, {
-			"type": "line",
-			"source": "power",
-			"source-layer": "power-line",
-			"filter": ["all",
-				["==", "kind", "line"],
-				["==", "voltage_count", 2],
-			],
-			"layout": {
-				"line-join": "miter"
-			},
-			"paint": {
-				"line-width": {
-					"base": 1.5,
-					"stops": [
-						[8, 1.5],
-						[12, 3]
-					]
-				},
-				"line-dasharray": [2, 2]
-			},
-			"id": "line_2v1"
-		}, {
-			"type": "line",
-			"source": "power",
-			"source-layer": "power-line",
-			"filter": ["all",
-				["==", "kind", "line"],
-				["==", "voltage_count", 2],
-			],
-			"layout": {
-				"line-join": "miter"
-			},
-			"paint": {
-				"line-width": {
-					"base": 1.5,
-					"stops": [
-						[8, 1.5],
-						[12, 3]
-					]
-				},
-				"line-dasharray": [0, 2, 2]
-			},
-			"id": "line_2v2"
-		}, {
-			"type": "line",
-			"source": "power",
-			"source-layer": "power-line",
-			"filter": ["all",
-				["==", "kind", "line"],
-				["==", "voltage_count", 3],
-			],
-			"layout": {
-				"line-join": "miter"
-			},
-			"paint": {
-				"line-width": {
-					"base": 1.5,
-					"stops": [
-						[8, 1.5],
-						[12, 3]
-					]
-				},
-				"line-dasharray": [2, 4]
-			},
-			"id": "line_3v1"
-		}, {
-			"type": "line",
-			"source": "power",
-			"source-layer": "power-line",
-			"filter": ["all",
-				["==", "kind", "line"],
-				["==", "voltage_count", 3],
-			],
-			"layout": {
-				"line-join": "miter"
-			},
-			"paint": {
-				"line-width": {
-					"base": 1.5,
-					"stops": [
-						[8, 1.5],
-						[12, 3]
-					]
-				},
-				"line-dasharray": [0, 2, 2, 2]
-			},
-			"id": "line_3v2"
-		}, {
-			"type": "line",
-			"source": "power",
-			"source-layer": "power-line",
-			"filter": ["all",
-				["==", "kind", "line"],
-				["==", "voltage_count", 3],
-			],
-			"layout": {
-				"line-join": "miter"
-			},
-			"paint": {
-				"line-width": {
-					"base": 1.5,
-					"stops": [
-						[8, 1.5],
-						[12, 3]
-					]
-				},
-				"line-dasharray": [0, 4, 2]
-			},
-			"id": "line_3v3"
-		}];
-
-		for (var line in lines) {
-			var e = lines[line];
-			e.id = pfx + e.id;
-			e.filter.push(filter);
-			this.map.addLayer(e, "powerline label");
+				"id": pfx + name
+			}
+			if (dash) l.paint["line-dasharray"] = dash;
+			map.addLayer(l, "powerline label");
 		}
+
+		layer('cable',  [["==", "kind", "cable"]], [2, 2]);
+		layer('line_0v',  [["==", "kind", "line"], ["==", "voltage_count", 0]]);
+		layer('line_1v',  [["==", "kind", "line"], ["==", "voltage_count", 1]]);
+		layer('line_2v1',  [["==", "kind", "line"], ["==", "voltage_count", 2]], [2, 2]);
+		layer('line_2v2',  [["==", "kind", "line"], ["==", "voltage_count", 2]], [0, 2, 2]);
+		layer('line_3v1',  [["==", "kind", "line"], ["==", "voltage_count", 3]], [2, 4]);
+		layer('line_3v2',  [["==", "kind", "line"], ["==", "voltage_count", 3]], [0, 2, 2, 2]);
+		layer('line_3v3',  [["==", "kind", "line"], ["==", "voltage_count", 3]], [0, 4, 2]);
 	}
 
 	powerline_colors(pfx, lighten) {
