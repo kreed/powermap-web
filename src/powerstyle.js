@@ -1,66 +1,26 @@
 import mapboxgl from 'mapbox-gl'
 
-var unknown_voltage_color = [0.33,0.33,0.33];
-var hvdc_color = [0.459,1,0.953];
 var voltage_colors = {
-	1000000: [0.816,0.482,0.529],
-	800000: [0.533,0.18,0.447],
-	765000: [0.776,0.251,0.851],
-	750000: [0.776,0.251,0.851],
-	735000: [0.839,0.349,0.718],
-	660000: [0.839,0.349,0.718],
-	525000: [0.337,0.2,0.537],
-	500000: [0.337,0.2,0.537],
-	450000: [0.337,0.2,0.537],
-	440000: [0.631,0.643,0.259],
-	420000: [0.631,0.643,0.259],
-	400000: [0.631,0.643,0.259],
-	380000: [0.796,0.529,0.631],
-	360000: [0.796,0.529,0.631],
-	350000: [0.796,0.529,0.631],
-	345000: [0.761,0.243,0.38],
-	330000: [0.761,0.243,0.38],
-	315000: [0.761,0.243,0.38],
-	300000: [0.761,0.243,0.38],
-	287000: [0.91,0.376,0.11],
-	275000: [0.91,0.376,0.11],
-	240000: [0.945,0.576,0.176],
-	230000: [0.945,0.576,0.176],
-	225000: [0.945,0.576,0.176],
-	220000: [0.804,0.286,0.22],
-	187000: [0.804,0.286,0.22],
-	170000: [0.804,0.286,0.22],
-	161000: [0.098,0.396,0.69],
-	154000: [0.098,0.396,0.69],
-	150000: [0.098,0.396,0.69],
-	144000: [0.098,0.396,0.69],
-	138000: [0.098,0.396,0.69],
-	132000: [0.098,0.396,0.69],
-	130000: [0.098,0.396,0.69],
-	125000: [0.482,0.686,0.871],
-	120000: [0.482,0.686,0.871],
-	115000: [0.482,0.686,0.871],
-	113000: [0.482,0.686,0.871],
-	110000: [0.482,0.686,0.871],
-	100000: [0.482,0.686,0.871],
-	90000: [0.482,0.686,0.871],
-	77000: [0.482,0.686,0.871],
-	72000: [0.306,0.698,0.396],
-	70000: [0.306,0.698,0.396],
-	69000: [0.306,0.698,0.396],
-	66000: [0.306,0.698,0.396],
-	65000: [0.306,0.698,0.396],
-	63000: [0.306,0.698,0.396],
-	60000: [0.506,0.557,0.22],
-	55000: [0.506,0.557,0.22],
-	50000: [0.506,0.557,0.22],
-	46000: [0.506,0.557,0.22],
-	35000: [0.494,0.286,0.176],
-	34500: [0.494,0.286,0.176],
-	33000: [0.494,0.286,0.176],
-	22000: [0.494,0.286,0.176],
-	20000: [0.494,0.286,0.176],
-}
+	"#cccccc": ["missing"],
+	"#444444": ["unknown"],
+	"#75fff3": ["HVDC"],
+	"#d07b87": ["1000000"],
+	"#882e72": ["800000"],
+	"#c640d9": ["765000", "750000"],
+	"#d659b7": ["735000", "660000"],
+	"#563389": ["525000", "500000", "450000"],
+	"#a1a442": ["440000", "420000", "400000"],
+	"#cb87a1": ["380000", "360000", "350000"],
+	"#c23e61": ["345000", "330000", "315000", "300000"],
+	"#e8601c": ["287000", "275000"],
+	"#f1932d": ["240000", "230000", "225000"],
+	"#cd4938": ["220000", "187000", "170000"],
+	"#1965b0": ["161000", "154000", "150000", "144000", "138000", "132000", "130000"],
+	"#7bafde": ["125000", "120000", "115000", "113000", "110000", "100000", "90000", "77000"],
+	"#4eb265": ["72000", "70000", "69000", "66000", "65000", "63000"],
+	"#818e38": ["60000", "55000", "50000", "46000"],
+	"#7e492d": ["35000", "34500", "33000", "22000", "20000"],
+};
 
 let PowerStyle = class PowerStyle {
 	labels() {
@@ -421,53 +381,44 @@ let PowerStyle = class PowerStyle {
 	}
 
 	powerline_colors(pfx, lighten) {
-		function color(c) {
+		function parse_color(c) {
+			c = parseInt(c.substring(1), 16)
+			var r = (c >> 16) & 0xff;
+			var g = (c >> 8) & 0xff;
+			var b = c & 0xff;
 			if (lighten) {
-				return 'rgb(' + (c[0] + (1 - c[0]) / 2) * 255 + ',' + (c[1] + (1 - c[1]) / 2) * 255  + ',' + (c[2] + (1 - c[2]) / 2) * 255 + ')';
+				return 'rgb(' + (r / 2 + 128) + ',' + (g / 2 + 128)  + ',' + (b / 2 + 128) + ')';
 			} else {
-				return 'rgb(' + c[0] * 255 + ',' + c[1] * 255 + ',' + c[2] * 255 + ')';
+				return 'rgb(' + r + ',' + g + ',' + b + ')';
 			}
 		}
 
 		var expression_base = [];
-		for (var e in voltage_colors) {
-			var n = Number(e);
-			if (n > 0) {
-				expression_base.push(n);
-				expression_base.push(color(voltage_colors[e]));
+		var colors = {};
+		for (var color in voltage_colors) {
+			var voltages = voltage_colors[color];
+			for (var i = 0; i < voltages.length; ++i) {
+				var n = Number(voltages[i]);
+				if (n > 0) {
+					expression_base.push(n);
+					expression_base.push(parse_color(color));
+				} else {
+					colors[voltages[i]] = parse_color(color);
+				}
 			}
 		}
+		expression_base.push(colors.unknown);
 
-		this.map.setPaintProperty(pfx + 'line_1v', "line-color", [
-			"match",
-			["number", ["get", "max_voltage"]],
-			...expression_base,
-			color(unknown_voltage_color)
-		]);
-		this.map.setPaintProperty(pfx + 'cable', "line-color", [
-			"match",
-			["number", ["get", "max_voltage"]],
-			...expression_base,
-			color(unknown_voltage_color)
-		]);
+		this.map.setPaintProperty(pfx + 'line_1v', "line-color", ["match", ["number", ["get", "max_voltage"]], ...expression_base]);
+		this.map.setPaintProperty(pfx + 'cable', "line-color", ["match", ["number", ["get", "max_voltage"]], ...expression_base]);
 		// TODO: whenever MVT supports array properties, we should use that here
 		// instead of separate keys. https://github.com/mapbox/vector-tile-spec/issues/75
-		this.map.setPaintProperty(pfx + 'line_primary', "line-color", [
-			"match",
-			["number", ["get", "voltage1"]],
-			...expression_base,
-			color(unknown_voltage_color)
-		]);
-		this.map.setPaintProperty(pfx + 'line_secondary', "line-color", [
-			"match",
-			["number", ["get", "voltage2"]],
-			...expression_base,
-			color(unknown_voltage_color)
-		]);
+		this.map.setPaintProperty(pfx + 'line_primary', "line-color", ["match", ["number", ["get", "voltage1"]], ...expression_base]);
+		this.map.setPaintProperty(pfx + 'line_secondary', "line-color", ["match", ["number", ["get", "voltage2"]], ...expression_base]);
 
-		this.map.setPaintProperty(pfx + 'line_0v', "line-color", color(unknown_voltage_color));
-		this.map.setPaintProperty(pfx + 'cable_hvdc', "line-color", color(hvdc_color));
-		this.map.setPaintProperty(pfx + 'line_hvdc', "line-color", color(hvdc_color));
+		this.map.setPaintProperty(pfx + 'line_0v', "line-color", colors.missing);
+		this.map.setPaintProperty(pfx + 'cable_hvdc', "line-color", colors.HVDC);
+		this.map.setPaintProperty(pfx + 'line_hvdc', "line-color", colors.HVDC);
 	}
 
 	powerlines() {
