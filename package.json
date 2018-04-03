@@ -5,12 +5,12 @@
   "private": true,
   "dependencies": {
     "mapbox-gl": "^0.44.1",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "1.0.14",
-    "semantic-ui-less": "^2.2.12",
-    "semantic-ui-react": "^0.74.2"
+    "react-scripts": "1.1.2",
+    "semantic-ui-less": "^2.3.1",
+    "semantic-ui-react": "^0.79.0"
   },
   "scripts": {
     "build-css": "lessc --include-path=node_modules/semantic-ui-less:semantic/a/b src/semantic.less src/semantic.css",
@@ -21,6 +21,6 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "less": "^2"
+    "less": "^2.7.3"
   }
 }
