@@ -221,8 +221,7 @@ let PowerStyle = class PowerStyle {
 			"source": "power",
 			"source-layer": "power-line",
 			"filter": ["all",
-				["==", "kind", "cable"],
-				["!=", "frequency", "0"]
+				["==", "kind", "cable"]
 			],
 			"layout": {
 				"line-join": "miter"
@@ -238,29 +237,6 @@ let PowerStyle = class PowerStyle {
 				"line-dasharray": [2, 2]
 			},
 			"id": "cable"
-		}, {
-			"type": "line",
-			"source": "power",
-			"source-layer": "power-line",
-			"filter": ["all",
-				["==", "kind", "cable"],
-				["has", "voltage"],
-				["==", "frequency", "0"]
-			],
-			"layout": {
-				"line-join": "miter"
-			},
-			"paint": {
-				"line-width": {
-					"base": 1.5,
-					"stops": [
-						[8, 1.5],
-						[12, 3]
-					]
-				},
-				"line-dasharray": [2, 2]
-			},
-			"id": "cable_hvdc"
 		}, {
 			"type": "line",
 			"source": "power",
@@ -288,8 +264,7 @@ let PowerStyle = class PowerStyle {
 			"source-layer": "power-line",
 			"filter": ["all",
 				["==", "kind", "line"],
-				["==", "voltage_count", 1],
-				["!=", "frequency", "0"]
+				["==", "voltage_count", 1]
 			],
 			"layout": {
 				"line-join": "miter"
@@ -414,28 +389,6 @@ let PowerStyle = class PowerStyle {
 				"line-dasharray": [0, 4, 2]
 			},
 			"id": "line_3v3"
-		}, {
-			"type": "line",
-			"source": "power",
-			"source-layer": "power-line",
-			"filter": ["all",
-				["==", "kind", "line"],
-				["has", "voltage"],
-				["==", "frequency", "0"]
-			],
-			"layout": {
-				"line-join": "miter"
-			},
-			"paint": {
-				"line-width": {
-					"base": 1.5,
-					"stops": [
-						[8, 1.5],
-						[12, 3]
-					]
-				},
-			},
-			"id": "line_hvdc"
 		}];
 
 		for (var line in lines) {
@@ -464,30 +417,31 @@ let PowerStyle = class PowerStyle {
 		for (var color in voltage_colors) {
 			var voltages = voltage_colors[color];
 			for (var i = 0; i < voltages.length; ++i) {
-				var n = Number(voltages[i]);
-				if (n > 0) {
-					expression_base.push(n);
-					expression_base.push(parse_color(color));
-				} else {
-					colors[voltages[i]] = parse_color(color);
-				}
+				expression_base.push(voltages[i]);
+				expression_base.push(parse_color(color));
+				colors[voltages[i]] = parse_color(color);
 			}
 		}
 		expression_base.push(colors.unknown);
 
-		this.map.setPaintProperty(pfx + 'line_1v', "line-color", ["match", ["number", ["get", "max_voltage"]], ...expression_base]);
-		this.map.setPaintProperty(pfx + 'cable', "line-color", ["match", ["number", ["get", "max_voltage"]], ...expression_base]);
+		var map = this.map;
+		function apply_color(layer_name, voltage_key) {
+			var v = ["case", ["==", "0", ["get", "frequency"]], "HVDC", ["to-string", ["get", voltage_key]]];
+			map.setPaintProperty(pfx + layer_name, "line-color", ["match", v, ...expression_base]);
+		}
+
 		// TODO: whenever MVT supports array properties, we should use that here
-		// instead of separate keys. https://github.com/mapbox/vector-tile-spec/issues/75
-		this.map.setPaintProperty(pfx + 'line_2v1', "line-color", ["match", ["number", ["get", "voltage1"]], ...expression_base]);
-		this.map.setPaintProperty(pfx + 'line_2v2', "line-color", ["match", ["number", ["get", "voltage2"]], ...expression_base]);
-		this.map.setPaintProperty(pfx + 'line_3v1', "line-color", ["match", ["number", ["get", "voltage1"]], ...expression_base]);
-		this.map.setPaintProperty(pfx + 'line_3v2', "line-color", ["match", ["number", ["get", "voltage2"]], ...expression_base]);
-		this.map.setPaintProperty(pfx + 'line_3v3', "line-color", ["match", ["number", ["get", "voltage3"]], ...expression_base]);
+		// instead of separate voltage..n keys.
+		// https://github.com/mapbox/vector-tile-spec/issues/75
+		apply_color('cable', 'max_voltage');
+		apply_color('line_1v', 'max_voltage');
+		apply_color('line_2v1', 'voltage1');
+		apply_color('line_2v2', 'voltage2');
+		apply_color('line_3v1', 'voltage1');
+		apply_color('line_3v2', 'voltage2');
+		apply_color('line_3v3', 'voltage3');
 
 		this.map.setPaintProperty(pfx + 'line_0v', "line-color", colors.missing);
-		this.map.setPaintProperty(pfx + 'cable_hvdc', "line-color", colors.HVDC);
-		this.map.setPaintProperty(pfx + 'line_hvdc', "line-color", colors.HVDC);
 	}
 
 	powerlines() {
