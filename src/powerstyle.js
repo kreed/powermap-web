@@ -47,7 +47,7 @@ let PowerStyle = class PowerStyle {
 				"text-offset": [0,0],
 				"text-rotation-alignment": "map",
 				"text-anchor": "bottom",
-				"text-field": "{voltage_pretty} {cables_pretty}"
+				"text-field": ["case", ["all", ["has", "cables"], ["has", "voltage_pretty"]], ["concat", ["get", "voltage_pretty"], " (", ["get", "cables"], ")"], ["has", "voltage_pretty"], ["get", "voltage_pretty"], ""]
 			},
 			"paint": {
 				"text-halo-color": "#fff",
