@@ -1,8 +1,7 @@
 import mapboxgl from 'mapbox-gl'
 
 var voltage_colors = {
-	"#cccccc": ["missing"],
-	"#444444": ["unknown"],
+	"#cccccc": ["missing", "unknown"],
 	"#75fff3": ["HVDC"],
 	"#d07b87": ["1000000"],
 	"#882e72": ["800000"],
