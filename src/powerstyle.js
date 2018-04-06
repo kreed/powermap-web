@@ -29,7 +29,7 @@ let PowerStyle = class PowerStyle {
 			"type": "symbol",
 			"source": "power",
 			"source-layer": "power-line",
-			"filter": ["in", "kind", "line", "cable"],
+			"filter": ["in", "kind", "line", "cable", "minor_line"],
 			"minzoom": 10,
 			"layout": {
 				"text-size": {
@@ -217,7 +217,8 @@ let PowerStyle = class PowerStyle {
 
 	powerlines() {
 		var map = this.map;
-		function layer(name, filter, dash) {
+		function layer(name, filter, dash, size) {
+			if (!size) size = { "base": 1.5, "stops": [[8, 1.5], [12, 3]] };
 			var l = {
 				"type": "line",
 				"source": "power",
@@ -229,13 +230,7 @@ let PowerStyle = class PowerStyle {
 					"line-join": "miter"
 				},
 				"paint": {
-					"line-width": {
-						"base": 1.5,
-						"stops": [
-							[8, 1.5],
-							[12, 3]
-						]
-					},
+					"line-width": size
 				},
 				"id": name
 			}
@@ -251,6 +246,7 @@ let PowerStyle = class PowerStyle {
 		layer('line_3v1',  [["==", "kind", "line"], ["==", "voltage_count", 3]], [2, 4]);
 		layer('line_3v2',  [["==", "kind", "line"], ["==", "voltage_count", 3]], [0, 2, 2, 2]);
 		layer('line_3v3',  [["==", "kind", "line"], ["==", "voltage_count", 3]], [0, 4, 2]);
+		layer('minor',  [["==", "kind", "minor_line"]], null, 1.5);
 	}
 
 	powerline_colors(lighten_non_ercot) {
@@ -294,6 +290,7 @@ let PowerStyle = class PowerStyle {
 		// TODO: whenever MVT supports array properties, we should use that here
 		// instead of separate voltage..n keys.
 		// https://github.com/mapbox/vector-tile-spec/issues/75
+		apply_color('minor', 'max_voltage');
 		apply_color('cable', 'max_voltage');
 		apply_color('line_1v', 'max_voltage');
 		apply_color('line_2v1', 'voltage1');
