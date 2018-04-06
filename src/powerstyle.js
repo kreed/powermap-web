@@ -215,7 +215,7 @@ let PowerStyle = class PowerStyle {
 		this.map.setPaintProperty('ercot_rtm', 'circle-opacity', visible ? 1 : 0);
 	}
 
-	powerline_base(pfx, global_filter) {
+	powerlines() {
 		var map = this.map;
 		function layer(name, filter, dash) {
 			var l = {
@@ -223,7 +223,6 @@ let PowerStyle = class PowerStyle {
 				"source": "power",
 				"source-layer": "power-line",
 				"filter": ["all",
-					global_filter,
 					...filter
 				],
 				"layout": {
@@ -238,7 +237,7 @@ let PowerStyle = class PowerStyle {
 						]
 					},
 				},
-				"id": pfx + name
+				"id": name
 			}
 			if (dash) l.paint["line-dasharray"] = dash;
 			map.addLayer(l, "powerline label");
@@ -254,8 +253,8 @@ let PowerStyle = class PowerStyle {
 		layer('line_3v3',  [["==", "kind", "line"], ["==", "voltage_count", 3]], [0, 4, 2]);
 	}
 
-	powerline_colors(pfx, lighten) {
-		function parse_color(c) {
+	powerline_colors(lighten_non_ercot) {
+		function parse_color(c, lighten) {
 			c = parseInt(c.substring(1), 16)
 			var r = (c >> 16) & 0xff;
 			var g = (c >> 8) & 0xff;
@@ -274,6 +273,10 @@ let PowerStyle = class PowerStyle {
 			for (var i = 0; i < voltages.length; ++i) {
 				expression_base.push(voltages[i]);
 				expression_base.push(parse_color(color));
+				if (lighten_non_ercot) {
+					expression_base.push("light" + voltages[i]);
+					expression_base.push(parse_color(color, true));
+				}
 				colors[voltages[i]] = parse_color(color);
 			}
 		}
@@ -282,7 +285,10 @@ let PowerStyle = class PowerStyle {
 		var map = this.map;
 		function apply_color(layer_name, voltage_key) {
 			var v = ["case", ["==", "0", ["get", "frequency"]], "HVDC", ["to-string", ["get", voltage_key]]];
-			map.setPaintProperty(pfx + layer_name, "line-color", ["match", v, ...expression_base]);
+			if (lighten_non_ercot) {
+				v = ["concat", ["case", ["==", ["get", "grid"], "ercot"], "", "light"], v];
+			}
+			map.setPaintProperty(layer_name, "line-color", ["match", v, ...expression_base]);
 		}
 
 		// TODO: whenever MVT supports array properties, we should use that here
@@ -296,14 +302,7 @@ let PowerStyle = class PowerStyle {
 		apply_color('line_3v2', 'voltage2');
 		apply_color('line_3v3', 'voltage3');
 
-		this.map.setPaintProperty(pfx + 'line_0v', "line-color", colors.missing);
-	}
-
-	powerlines() {
-		this.powerline_base('otherline_', ["!=", "grid", "ercot"]);
-		this.powerline_base('ercotline_', ["==", "grid", "ercot"]);
-		this.powerline_colors('otherline_');
-		this.powerline_colors('ercotline_');
+		this.map.setPaintProperty('line_0v', "line-color", colors.missing);
 	}
 
 	power_areas() {
@@ -361,11 +360,7 @@ let PowerStyle = class PowerStyle {
 	}
 
 	set_highlight_ercot(highlight) {
-		if (highlight) {
-			this.powerline_colors('otherline_', true);
-		} else {
-			this.powerline_colors('otherline_');
-		}
+		this.powerline_colors(highlight);
 	}
 
 	set_show_powerlines(show) {
@@ -389,6 +384,7 @@ let PowerStyle = class PowerStyle {
 		this.power_areas();
 		this.labels();
 		this.powerlines();
+		this.powerline_colors();
 	}
 }
 
