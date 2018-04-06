@@ -28,7 +28,7 @@ let PowerStyle = class PowerStyle {
 			"type": "symbol",
 			"source": "power",
 			"source-layer": "power-line",
-			"filter": ["in", "kind", "line", "cable", "minor_line"],
+			"filter": ["in", "kind", "line", "cable", "minor_line", "minor_cable"],
 			"minzoom": 10,
 			"layout": {
 				"text-size": {
@@ -246,6 +246,7 @@ let PowerStyle = class PowerStyle {
 		layer('line_3v2',  [["==", "kind", "line"], ["==", "voltage_count", 3]], [0, 2, 2, 2]);
 		layer('line_3v3',  [["==", "kind", "line"], ["==", "voltage_count", 3]], [0, 4, 2]);
 		layer('minor',  [["==", "kind", "minor_line"]], null, 1.5);
+		layer('minor_cable',  [["==", "kind", "minor_cable"]], [2, 2], 1.5);
 	}
 
 	powerline_colors(lighten_non_ercot) {
@@ -290,6 +291,7 @@ let PowerStyle = class PowerStyle {
 		// instead of separate voltage..n keys.
 		// https://github.com/mapbox/vector-tile-spec/issues/75
 		apply_color('minor', 'max_voltage');
+		apply_color('minor_cable', 'max_voltage');
 		apply_color('cable', 'max_voltage');
 		apply_color('line_1v', 'max_voltage');
 		apply_color('line_2v1', 'voltage1');
