@@ -122,6 +122,7 @@ let PowerStyle = class PowerStyle {
 				],
 				"symbol-placement": "point",
 				"text-padding": 3,
+				"text-offset": [0, 3],
 				"text-field": "{name} {voltage_pretty}",
 				"text-letter-spacing": 0.1,
 				"text-max-width": 7
@@ -234,7 +235,7 @@ let PowerStyle = class PowerStyle {
 				"id": name
 			}
 			if (dash) l.paint["line-dasharray"] = dash;
-			map.addLayer(l, "powerline label");
+			map.addLayer(l);
 		}
 
 		layer('cable',  [["==", "kind", "cable"]], [2, 2]);
@@ -279,28 +280,29 @@ let PowerStyle = class PowerStyle {
 		expression_base.push(colors.unknown);
 
 		var map = this.map;
-		function apply_color(layer_name, voltage_key) {
+		function apply_color(layer_name, voltage_key, color_key) {
 			var v = ["case", ["==", "0", ["get", "frequency"]], "HVDC", ["to-string", ["get", voltage_key]]];
 			if (lighten_non_ercot) {
 				v = ["concat", ["case", ["==", ["get", "grid"], "ercot"], "", "light"], v];
 			}
-			map.setPaintProperty(layer_name, "line-color", ["match", v, ...expression_base]);
+			map.setPaintProperty(layer_name, color_key || "line-color", ["match", v, ...expression_base]);
 		}
 
 		// TODO: whenever MVT supports array properties, we should use that here
 		// instead of separate voltage..n keys.
 		// https://github.com/mapbox/vector-tile-spec/issues/75
-		apply_color('minor', 'max_voltage');
-		apply_color('minor_cable', 'max_voltage');
-		apply_color('cable', 'max_voltage');
+		this.map.setPaintProperty('line_0v', "line-color", colors.missing);
 		apply_color('line_1v', 'max_voltage');
 		apply_color('line_2v1', 'voltage1');
 		apply_color('line_2v2', 'voltage2');
 		apply_color('line_3v1', 'voltage1');
 		apply_color('line_3v2', 'voltage2');
 		apply_color('line_3v3', 'voltage3');
+		apply_color('minor', 'max_voltage');
+		apply_color('minor_cable', 'max_voltage');
+		apply_color('cable', 'max_voltage');
 
-		this.map.setPaintProperty('line_0v', "line-color", colors.missing);
+		apply_color('substation_point', 'max_voltage', 'circle-color');
 	}
 
 	power_areas() {
@@ -334,6 +336,9 @@ let PowerStyle = class PowerStyle {
 				'fill-outline-color': 'hsl(0, 100%, 32%)',
 			}
 		});
+	}
+
+	power_points() {
 		this.map.addLayer({
 			"id": "generator point",
 			"source": "power",
@@ -352,6 +357,27 @@ let PowerStyle = class PowerStyle {
 				},
 				'circle-radius': {
 					"stops": [[5, 0], [7, 0.5], [12, 4]]
+				},
+			}
+		});
+		this.map.addLayer({
+			"id": "substation_point",
+			"source": "power",
+			"source-layer": "power-point",
+			"filter": [
+				"all",
+				["==", "kind", "substation"]
+			],
+			"type": "circle",
+			"maxzoom": 14,
+			"paint": {
+				"circle-color": "hsl(0, 100%, 71%)",
+				"circle-stroke-color": "black",
+				"circle-stroke-width": {
+					"stops": [[5, 0], [6, 0.5], [12, 3]]
+				},
+				"circle-radius": {
+					"stops": [[5, 0], [6, 2], [12, 6]]
 				},
 			}
 		});
@@ -380,9 +406,10 @@ let PowerStyle = class PowerStyle {
 		});
 
 		this.power_areas();
-		this.labels();
 		this.powerlines();
+		this.power_points();
 		this.powerline_colors();
+		this.labels();
 	}
 }
 
