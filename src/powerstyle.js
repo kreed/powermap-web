@@ -363,6 +363,22 @@ let PowerStyle = class PowerStyle {
 		});
 	}
 
+	power_hizoom() {
+		this.map.addLayer({
+			"id": "symbols",
+			"source": "power",
+			"source-layer": "power-point",
+			"filter": [
+				"all",
+				["in", "kind", "pole", "portal", "tower"]
+			],
+			"type": "symbol",
+			"layout": {
+				"icon-image": "{kind}"
+			}
+		});
+	}
+
 	set_highlight_ercot(highlight) {
 		this.powerline_colors(highlight);
 	}
@@ -387,6 +403,7 @@ let PowerStyle = class PowerStyle {
 
 		this.power_areas();
 		this.powerlines();
+		this.power_hizoom();
 		this.labels();
 		this.powerline_colors();
 	}
