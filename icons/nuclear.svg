@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="18px"
+   height="18px"
+   viewBox="0 0 18 18"
+   version="1.1"
+   id="SVGRoot"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="nuclear.svg">
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="40.226519"
+     inkscape:cx="7.4036889"
+     inkscape:cy="10.242661"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:grid-bbox="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4146" />
+  </sodipodi:namedview>
+  <defs
+     id="defs4130" />
+  <metadata
+     id="metadata4133">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
+    <rect
+       style="fill:#000000"
+       id="rect4150"
+       width="18"
+       height="18"
+       x="0"
+       y="0" />
+    <rect
+       style="fill:#ffffff"
+       id="rect4154"
+       width="16"
+       height="16"
+       x="1"
+       y="1" />
+    <g
+       id="g4040"
+       transform="matrix(0.26211531,0,0,0.26211531,2.4471173,2.4471172)">
+      <path
+         style="clip-rule:evenodd;fill-rule:evenodd"
+         inkscape:connector-curvature="0"
+         d="M 34.69,8.163 25,25 15.32,8.161 C 21.531,4.59 28.892,4.833 34.69,8.163 M 25,25 15.263,41.811 C 9.481,38.454 5.589,32.201 5.577,25.037 Z m 0,0 19.423,0.036 C 44.41,32.2 40.518,38.454 34.737,41.81 Z m 25,0 C 50,11.194 38.806,0 25,0 11.194,0 0,11.194 0,25 0,38.806 11.194,50 25,50 38.806,50 50,38.806 50,25 Z"
+         id="path4038" />
+    </g>
+  </g>
+</svg>

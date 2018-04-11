@@ -21,7 +21,7 @@ let Map = class Map extends React.Component {
 	componentDidMount() {
 		this.map = new mapboxgl.Map({
 			container: this.mapContainer,
-			style: 'mapbox://styles/mapbox/light-v9',
+			style: 'mapbox://styles/kre3d/cjful4l500mjb2smihw06awcc',
 			hash: true,
 			center: [-98.34, 30.55],
 			zoom: 6

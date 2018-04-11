@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="18px"
+   height="18px"
+   viewBox="0 0 18 18"
+   version="1.1"
+   id="SVGRoot"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="gas.svg">
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="28.444444"
+     inkscape:cx="4.320387"
+     inkscape:cy="10.366395"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:grid-bbox="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4146" />
+  </sodipodi:namedview>
+  <defs
+     id="defs4130" />
+  <metadata
+     id="metadata4133">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
+    <rect
+       style="fill:#000000"
+       id="rect4150"
+       width="18"
+       height="18"
+       x="0"
+       y="0" />
+    <rect
+       style="fill:#ffffff"
+       id="rect4154"
+       width="16"
+       height="16"
+       x="1"
+       y="1" />
+    <g
+       transform="matrix(0.2652536,0,0,0.2652536,2.3687563,2.36866)"
+       id="g3958">
+      <path
+         style="clip-rule:evenodd;fill-rule:evenodd"
+         inkscape:connector-curvature="0"
+         d="m 26.716,35.647 c 2.701,-4.409 3.191,-9.13 2.405,-14.139 3.309,2.487 5.428,6.167 6.053,10.258 0.875,5.743 -1.272,11.321 -5.235,15.449 H 19.905 c -3.1,-3.714 -3.888,-6.936 -3.451,-9.831 0.417,-2.764 1.949,-5.351 3.676,-7.808 3.14,1.676 4.016,5.564 4.979,8.696 z M 43.21,28.554 C 40.334,17.205 29.913,7.301 21.287,0 17.984,9.696 12.287,16.903 8.412,25.917 4.927,34.019 4.491,41.396 13.591,47.215 H 8.409 V 50 h 33.9 v -2.785 h -5.357 c 6.283,-4.347 8.094,-11.413 6.258,-18.661 z"
+         id="path3956" />
+    </g>
+  </g>
+</svg>
