@@ -68,12 +68,12 @@ let PowerStyle = class PowerStyle {
 				"all",
 				["==", "kind", "generator"],
 			],
-			"minzoom": 16,
+			"minzoom": 10,
 			"layout": {
 				"text-line-height": 1,
 				"text-size": {
 					"base": 1,
-					"stops": [[12,11],[16,16]]
+					"stops": [[12,11],[16,12]]
 				},
 				"symbol-avoid-edges": true,
 				"text-transform": "uppercase",
@@ -83,19 +83,39 @@ let PowerStyle = class PowerStyle {
 				],
 				"symbol-placement": "point",
 				"text-padding": 3,
-				"text-field": "{name} {capacity_pretty}",
+				"text-field": ["step", ["zoom"], "", 16, ["concat", ["string", ["get", "name"], ""], " ", ["string", ["get", "capacity_pretty"], ""]]],
 				"text-letter-spacing": 0.1,
-				"text-max-width": 7
+				"text-max-width": 7,
+				"text-offset": [0, 2.5],
+				"icon-size": ["interpolate", ["exponential", 1], ["zoom"], 9, 0.1, 16, 1.2],
+				"icon-image": ["concat", ["to-string", ["get", "fuel"]], "_gen"]
 			},
 			"paint": {
 				"text-halo-color": "#fff",
 				"text-color": "hsl(0, 1%, 34%)",
-				"text-halo-width": {
-					 "base": 1,
-					 "stops": [[14,1.25],[15,1.5]]
-				},
+				"text-halo-width": 1.5,
 				"text-halo-blur": 0,
-				"text-translate": [0,-2]
+			}
+		});
+		this.map.addLayer({
+			"id": "substation_point",
+			"source": "power",
+			"source-layer": "power-point",
+			"filter": [
+				"all",
+				["==", "kind", "substation"]
+			],
+			"type": "circle",
+			"maxzoom": 14,
+			"paint": {
+				"circle-color": "hsl(0, 100%, 71%)",
+				"circle-stroke-color": "black",
+				"circle-stroke-width": {
+					"stops": [[5, 0], [6, 0.5], [12, 3]]
+				},
+				"circle-radius": {
+					"stops": [[5, 0], [6, 2], [12, 6]]
+				},
 			}
 		});
 		this.map.addLayer({
@@ -158,7 +178,7 @@ let PowerStyle = class PowerStyle {
 				"text-padding": 3,
 				"text-anchor": "left",
 				"icon-image": ["match", ["to-string", ["get", "fuel"]], "coal", "coal", "wind", "wind", "solar", "solar", "hydro", "hydro", "gas", "gas", "nuclear", "nuclear", "unknown_fuel"],
-				"text-field": ["step", ["zoom"], "", 9, ["concat", ["get", "name"], " ", ["case", ["has", "capacity_pretty"], ["get", "capacity_pretty"], ""]]],
+				"text-field": ["step", ["zoom"], "", 9, ["concat", ["string", ["get", "name"], ""], " ", ["string", ["get", "capacity_pretty"], ""]]],
 				"text-letter-spacing": 0.1,
 				"text-max-width": 7,
 				"text-offset": [1, 0],
@@ -343,51 +363,6 @@ let PowerStyle = class PowerStyle {
 		});
 	}
 
-	power_points() {
-		this.map.addLayer({
-			"id": "generator point",
-			"source": "power",
-			"source-layer": "power-point",
-			"filter": [
-				"all",
-				["==", "kind", "generator"],
-				["!=", "label_placement", true],
-			],
-			"type": "circle",
-			"paint": {
-				'circle-color': 'hsl(0, 100%, 71%)',
-				'circle-stroke-color': 'hsl(0, 100%, 32%)',
-				'circle-stroke-width': {
-					"stops": [[5, 0], [7, 0.5], [12, 3]]
-				},
-				'circle-radius': {
-					"stops": [[5, 0], [7, 0.5], [12, 4]]
-				},
-			}
-		});
-		this.map.addLayer({
-			"id": "substation_point",
-			"source": "power",
-			"source-layer": "power-point",
-			"filter": [
-				"all",
-				["==", "kind", "substation"]
-			],
-			"type": "circle",
-			"maxzoom": 14,
-			"paint": {
-				"circle-color": "hsl(0, 100%, 71%)",
-				"circle-stroke-color": "black",
-				"circle-stroke-width": {
-					"stops": [[5, 0], [6, 0.5], [12, 3]]
-				},
-				"circle-radius": {
-					"stops": [[5, 0], [6, 2], [12, 6]]
-				},
-			}
-		});
-	}
-
 	set_highlight_ercot(highlight) {
 		this.powerline_colors(highlight);
 	}
@@ -412,9 +387,8 @@ let PowerStyle = class PowerStyle {
 
 		this.power_areas();
 		this.powerlines();
-		this.power_points();
-		this.powerline_colors();
 		this.labels();
+		this.powerline_colors();
 	}
 }
 
