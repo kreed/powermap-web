@@ -156,11 +156,13 @@ let PowerStyle = class PowerStyle {
 				"text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
 				"symbol-placement": "point",
 				"text-padding": 3,
+				"text-anchor": "left",
 				"icon-image": ["match", ["to-string", ["get", "fuel"]], "coal", "coal", "wind", "wind", "solar", "solar", "hydro", "hydro", "gas", "gas", "nuclear", "nuclear", "unknown_fuel"],
 				"text-field": ["step", ["zoom"], "", 9, ["concat", ["get", "name"], " ", ["case", ["has", "capacity_pretty"], ["get", "capacity_pretty"], ""]]],
 				"text-letter-spacing": 0.1,
 				"text-max-width": 7,
-				"text-offset": [0, 2.5],
+				"text-offset": [1, 0],
+				"text-justify": "left",
 				"icon-allow-overlap": true
 			},
 			"paint": {
