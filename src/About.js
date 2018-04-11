@@ -20,7 +20,7 @@ const About = () => {
 				<List.Item><a href='https://www.mapbox.com/help/define-mapbox-gl/'>Mapbox GL</a> renders the map in the browser</List.Item>
 			</List>
 			<p>Code is available for the <a href='https://bitbucket.org/ceby/powermap-web'>frontend</a> and <a href='https://bitbucket.org/ceby/powermap-tiles'>backend</a>. I hope to provide installation instructions and documentation in the future.</p>
-			<p>Fuel icons were created by Georgiana Ionescu and Co-Effect Creative at <a href="https://thenounproject.com/">the Noun Project.</a></p>
+			<p>Fuel icons were created by Georgiana Ionescu and Marli du Plessis at <a href="https://thenounproject.com/">the Noun Project.</a></p>
 			<Header as='h2'>See also</Header>
 			<p><a href='https://openinframap.org/'>Open Infrastructure Map</a></p>
 		</Container>
