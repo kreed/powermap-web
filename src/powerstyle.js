@@ -159,7 +159,7 @@ let PowerStyle = class PowerStyle {
 			}
 		});
 		this.map.addLayer({
-			"id": "plant label",
+			"id": "plant_label",
 			"type": "symbol",
 			"source": "power",
 			"source-layer": "power-point",
@@ -214,23 +214,6 @@ let PowerStyle = class PowerStyle {
 					"stops": [[5, 0], [6, 8]]
 				},
 			}
-		});
-		var map = this.map;
-		this.map.on('click', function (e) {
-			var features = map.queryRenderedFeatures(e.point, { layers: ['ercot_rtm'] });
-
-			if (!features.length) {
-				return;
-			}
-
-			var feature = features[0];
-
-			// Populate the popup and set its coordinates
-			// based on the feature found.
-			new mapboxgl.Popup()
-				.setLngLat(feature.geometry.coordinates)
-				.setHTML(feature.properties.description)
-				.addTo(map);
 		});
 	}
 
@@ -406,6 +389,49 @@ let PowerStyle = class PowerStyle {
 		this.power_hizoom();
 		this.labels();
 		this.powerline_colors();
+
+		function osm_url(feature) {
+			var id = feature.properties.osm_id;
+			var type = 'way';
+			if (id < 0) {
+				id = -id;
+				type = 'relation';
+			} else if (feature.properties.label_placement === 'false') {
+				type = 'node';
+			}
+			return 'https://www.openstreetmap.org/' + type + '/' + id;
+		}
+
+		this.map.on('click', function (e) {
+			var layers = ['plant_label', 'substation_point'];
+			if (map.getSource('ercot_rtm'))
+				layers.push('ercot_rtm');
+			var features = map.queryRenderedFeatures(e.point, { layers: layers });
+			if (!features.length)
+				return;
+
+			var feature = features[0];
+			var p = feature.properties;
+			var html;
+			if (feature.layer.id === 'ercot_rtm') {
+				html = feature.properties.description;
+			} else {
+				html = '<strong>' + p.name + '</strong>';
+				if (p.operator) html = html + '<br>Operator: ' + p.operator;
+				if (p.capacity) html = html + '<br>Capacity: ' + p.capacity_pretty;
+				if (p.fuel) html = html + '<br>Fuel: ' + p.fuel;
+				if (p.substation) html = html + '<br>Type: ' + p.substation;
+				if (p.voltage) html = html + '<br>Voltage: ' + p.voltage_pretty;
+				if (p.frequency) html = html + '<br>Frequency: ' + p.frequency;
+				if (p.start_date) html = html + '<br>In service: ' + p.start_date;
+				html = html + '<br>OpenStreetMap ID: <a href="' + osm_url(feature) + '">' + Math.abs(p.osm_id) + '</a>';
+			}
+
+			new mapboxgl.Popup()
+				.setLngLat(feature.geometry.coordinates)
+				.setHTML(html)
+				.addTo(map);
+		});
 	}
 }
 
