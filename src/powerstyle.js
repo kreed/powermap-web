@@ -88,7 +88,8 @@ let PowerStyle = class PowerStyle {
 				"text-max-width": 7,
 				"text-offset": [0, 2.5],
 				"icon-size": ["interpolate", ["exponential", 1], ["zoom"], 9, 0.1, 16, 1.2],
-				"icon-image": ["concat", ["to-string", ["get", "fuel"]], "_gen"]
+				"icon-image": ["concat", ["to-string", ["get", "fuel"]], "_gen"],
+				"icon-allow-overlap": true
 			},
 			"paint": {
 				"text-halo-color": "#fff",
