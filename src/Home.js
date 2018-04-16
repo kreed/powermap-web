@@ -2,7 +2,7 @@ import React from 'react';
 import { Accordion, Checkbox, Segment, List, Icon } from 'semantic-ui-react'
 import Map from './Map';
 
-export default class App extends React.Component {
+export default class Home extends React.Component {
 	state = {
 		linesChecked: true,
 		gridChecked: false,

@@ -7,7 +7,13 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoia3JlM2QiLCJhIjoiY2lwcjJrZ3p2MDZyOWZvbTN0bXV1e
 let Map = class Map extends React.Component {
 	map;
 
+	constructor(props) {
+		super(props);
+		this.styleLoaded = this.styleLoaded.bind(this);
+	}
+
 	componentWillReceiveProps(nextProps) {
+		console.log(nextProps, this.style);
 		if (this.style) {
 			if (this.props.grid !== nextProps.grid)
 				this.style.set_highlight_ercot(nextProps.grid)
@@ -16,6 +22,12 @@ let Map = class Map extends React.Component {
 			if (this.props.rtm !== nextProps.rtm)
 				this.style.set_ercot_rtm(nextProps.rtm);
 		}
+	}
+
+	styleLoaded() {
+		this.style = new PowerStyle(this.map, "https://power.kreed.org/tiles/power/{z}/{x}/{y}.pbf");
+		this.style.set_highlight_ercot(this.props.grid)
+		if (this.props.onStyleLoad) this.props.onStyleLoad();
 	}
 
 	componentDidMount() {
@@ -28,9 +40,7 @@ let Map = class Map extends React.Component {
 		});
 		window.map = this.map;
 
-		this.map.on('load', () => {
-			this.style = new PowerStyle(this.map, "https://power.kreed.org/tiles/power/{z}/{x}/{y}.pbf");
-		});
+		this.map.on('load', this.styleLoaded);
 	}
 
 	render() {

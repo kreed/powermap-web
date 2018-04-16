@@ -2,8 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom';
 import { Menu, Responsive } from 'semantic-ui-react'
 
-import Home from './Home';
 import About from './About';
+import Home from './Home';
+import TPIT from './TPIT';
 
 const App = () => {
 	return (
@@ -16,6 +17,7 @@ const App = () => {
 					<Menu.Item as={NavLink} activeClassName="active" to="/about">About</Menu.Item>
 				</Menu>
 				<Route exact path="/" component={Home} />
+				<Route path="/tpit" component={TPIT} />
 				<Route path="/about" component={About} />
 			</div>
 		</Router>
