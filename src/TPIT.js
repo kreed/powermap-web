@@ -3,12 +3,7 @@ import Map from './Map';
 import mapboxgl from 'mapbox-gl'
 
 export default class TPIT extends React.Component {
-	constructor(props) {
-		super(props);
-		this.initStyle = this.initStyle.bind(this);
-	}
-
-	initStyle() {
+	initStyle = () => {
 		var map = this.mapComponent.map;
 
 		map.removeLayer('plant_label');

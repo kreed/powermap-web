@@ -39,24 +39,15 @@ function osm_url(feature) {
 let Map = class Map extends React.Component {
 	map;
 
-	constructor(props) {
-		super(props);
-		this.styleLoaded = this.styleLoaded.bind(this);
-		this.handleClick = this.handleClick.bind(this);
-	}
-
 	componentWillReceiveProps(nextProps) {
-		console.log(nextProps, this.style);
-		if (this.style) {
-			if (this.props.grid !== nextProps.grid)
-				this.set_highlight_ercot(nextProps.grid)
-			if (this.props.lines !== nextProps.lines)
-				this.set_show_powerlines(nextProps.lines);
-			if (this.props.plants !== nextProps.plants)
-				this.set_show_plants(nextProps.plants);
-			if (this.props.rtm !== nextProps.rtm)
-				this.set_ercot_rtm(nextProps.rtm);
-		}
+		if (this.props.grid !== nextProps.grid)
+			this.powerline_colors(nextProps.grid)
+		if (this.props.lines !== nextProps.lines)
+			this.set_show_powerlines(nextProps.lines);
+		if (this.props.plants !== nextProps.plants)
+			this.set_show_plants(nextProps.plants);
+		if (this.props.rtm !== nextProps.rtm)
+			this.set_ercot_rtm(nextProps.rtm);
 	}
 
 	componentDidMount() {
@@ -421,10 +412,6 @@ let Map = class Map extends React.Component {
 		});
 	}
 
-	set_highlight_ercot(highlight) {
-		this.powerline_colors(highlight);
-	}
-
 	set_show_plants(show) {
 		this.map.setLayoutProperty('plant_label', 'visibility', show ? 'visible' : 'none');
 	}
@@ -437,7 +424,7 @@ let Map = class Map extends React.Component {
 		}
 	}
 
-	styleLoaded() {
+	styleLoaded = () => {
 		this.map.addSource('power', {
 			type: 'vector',
 			tiles: ["https://power.kreed.org/tiles/power/{z}/{x}/{y}.pbf"],
@@ -449,19 +436,17 @@ let Map = class Map extends React.Component {
 		this.powerlines();
 		this.power_hizoom();
 		this.labels();
-		this.powerline_colors();
+		this.powerline_colors(this.props.grid);
 
 		this.map.on('click', this.handleClick);
 
-		this.set_highlight_ercot(this.props.grid)
-		this.set_show_powerlines(this.props.lines);
-		this.set_show_plants(this.props.plants);
-		this.set_ercot_rtm(this.props.rtm);
-
+		if (this.props.lines) this.set_show_powerlines(this.props.lines);
+		if (this.props.plants) this.set_show_plants(this.props.plants);
+		if (this.props.rtm) this.set_ercot_rtm(this.props.rtm);
 		if (this.props.onStyleLoad) this.props.onStyleLoad();
 	}
 
-	handleClick(e) {
+	handleClick = (e) => {
 		var layers = ['substation_point'];
 		if (this.props.plant) layers.push('plant_label');
 		if (this.props.rtm) layers.push('ercot_rtm');

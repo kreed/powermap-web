@@ -47,7 +47,8 @@ export default class Home extends React.Component {
 			<Map
 				lines={this.state.linesChecked}
 				grid={this.state.gridChecked}
-				rtm={this.state.rtmChecked}>
+				rtm={this.state.rtmChecked}
+				plants={true}>
 				<Accordion as={Segment} inverted className='map-control'>
 					<Accordion.Title index={0} active={this.state.settingsOpen} onClick={this.settingsClicked}>
 						{this.state.settingsOpen ? <Icon name='dropdown' /> : <Icon name='setting' fitted />}
