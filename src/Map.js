@@ -27,7 +27,7 @@ var voltage_colors = {
 function pretty_key(str) {
 	if (str === 'plant:source' || str === 'generator:source') return 'Fuel';
 	if (str === 'plant:output:electricity' || str === 'generator:output:electricity') return 'Capacity';
-	return str.replace(/\b\w/g, l => l.toUpperCase()).replace(/[ :]/, ' ');
+	return str.replace(/[_:]/, ' ').replace(/\b\w/g, l => l.toUpperCase());
 }
 
 function osm_url(feature) {
