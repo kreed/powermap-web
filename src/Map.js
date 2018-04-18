@@ -24,6 +24,12 @@ var voltage_colors = {
 	"#7e492d": ["35000", "34500", "33000", "22000", "20000"],
 };
 
+function pretty_key(str) {
+	if (str === 'plant:source' || str === 'generator:source') return 'Fuel';
+	if (str === 'plant:output:electricity' || str === 'generator:output:electricity') return 'Capacity';
+	return str.replace(/\b\w/g, l => l.toUpperCase()).replace(/[ :]/, ' ');
+}
+
 function osm_url(feature) {
 	var id = feature.properties.osm_id;
 	var type = 'way';
@@ -73,7 +79,7 @@ let Map = class Map extends React.Component {
 
 	labels() {
 		this.map.addLayer({
-			"id": "powerline label",
+			"id": "powerline_label",
 			"type": "symbol",
 			"source": "power",
 			"source-layer": "power-line",
@@ -109,7 +115,7 @@ let Map = class Map extends React.Component {
 			}
 		});
 		this.map.addLayer({
-			"id": "generator label",
+			"id": "generator_label",
 			"type": "symbol",
 			"source": "power",
 			"source-layer": "power-point",
@@ -447,8 +453,8 @@ let Map = class Map extends React.Component {
 	}
 
 	handleClick = (e) => {
-		var layers = ['substation_point'];
-		if (this.props.plant) layers.push('plant_label');
+		var layers = ['substation_point', 'generator_label', 'powerline_label'];
+		if (this.props.plants) layers.push('plant_label');
 		if (this.props.rtm) layers.push('ercot_rtm');
 		var features = this.map.queryRenderedFeatures(e.point, { layers: layers });
 		if (!features.length)
@@ -460,19 +466,22 @@ let Map = class Map extends React.Component {
 		if (feature.layer.id === 'ercot_rtm') {
 			html = feature.properties.description;
 		} else {
-			html = '<strong>' + p.name + '</strong>';
-			if (p.operator) html = html + '<br>Operator: ' + p.operator;
-			if (p.capacity) html = html + '<br>Capacity: ' + p.capacity_pretty;
-			if (p.fuel) html = html + '<br>Fuel: ' + p.fuel;
-			if (p.substation) html = html + '<br>Type: ' + p.substation;
+			var tags = JSON.parse(p.tags);
+			console.log(p);
+			console.log(tags);
+			html = '<strong>' + (p.name ? p.name : pretty_key(p.kind)) + '</strong>';
 			if (p.voltage) html = html + '<br>Voltage: ' + p.voltage_pretty;
-			if (p.frequency) html = html + '<br>Frequency: ' + p.frequency;
-			if (p.start_date) html = html + '<br>In service: ' + p.start_date;
+			for (var key in tags) {
+				if (['capacity', 'max_voltage', 'voltage', 'voltage_normalized', 'voltage_count', 'name', 'osm_id', 'power', 'way_area', 'barrier'].includes(key)) continue;
+				html = html + '<br>' + pretty_key(key) + ': ' + tags[key];
+			}
 			html = html + '<br>OpenStreetMap ID: <a href="' + osm_url(feature) + '">' + Math.abs(p.osm_id) + '</a>';
 		}
 
+		var coord = e.lngLat;
+		if (feature.geometry.type === 'Point') coord = feature.geometry.coordinates;
 		new mapboxgl.Popup()
-			.setLngLat(feature.geometry.coordinates)
+			.setLngLat(coord)
 			.setHTML(html)
 			.addTo(this.map);
 	}
