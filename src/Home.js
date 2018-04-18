@@ -5,6 +5,7 @@ import Map from './Map';
 export default class Home extends React.Component {
 	state = {
 		linesChecked: true,
+		plantsChecked: true,
 		gridChecked: false,
 		rtmChecked: false,
 		settingsOpen: false
@@ -21,6 +22,12 @@ export default class Home extends React.Component {
 	linesChecked = () => {
 		this.setState(prevState => ({
 			linesChecked: !prevState.linesChecked
+		}));
+	}
+
+	plantsChecked = () => {
+		this.setState(prevState => ({
+			plantsChecked: !prevState.plantsChecked
 		}));
 	}
 
@@ -46,9 +53,9 @@ export default class Home extends React.Component {
 		return (
 			<Map
 				lines={this.state.linesChecked}
+				plants={this.state.plantsChecked}
 				grid={this.state.gridChecked}
-				rtm={this.state.rtmChecked}
-				plants={true}>
+				rtm={this.state.rtmChecked}>
 				<Accordion as={Segment} inverted className='map-control'>
 					<Accordion.Title index={0} active={this.state.settingsOpen} onClick={this.settingsClicked}>
 						{this.state.settingsOpen ? <Icon name='dropdown' /> : <Icon name='setting' fitted />}
@@ -57,6 +64,7 @@ export default class Home extends React.Component {
 					<Accordion.Content active={this.state.settingsOpen}>
 						<List celled>
 							<Checkbox as={List.Item} toggle label="Powerlines" checked={this.state.linesChecked} onChange={this.linesChecked} />
+							<Checkbox as={List.Item} toggle label="Power plants" checked={this.state.plantsChecked} onChange={this.plantsChecked} />
 							<Checkbox as={List.Item} toggle label="ERCOT grid" checked={this.state.gridChecked} onChange={this.gridChecked} />
 							<Checkbox as={List.Item} toggle label="ERCOT generators" checked={this.state.rtmChecked} onChange={this.rtmChecked} />
 						</List>
