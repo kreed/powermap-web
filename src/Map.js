@@ -27,7 +27,7 @@ var voltage_colors = {
 function pretty_key(str) {
 	if (str === 'plant:source' || str === 'generator:source') return 'Fuel';
 	if (str === 'plant:output:electricity' || str === 'generator:output:electricity') return 'Capacity';
-	return str.replace(/[_:]/, ' ').replace(/\b\w/g, l => l.toUpperCase());
+	return str.replace(/[_:]/, ' ').replace(/^\w/g, l => l.toUpperCase());
 }
 
 function osm_url(feature) {
@@ -433,7 +433,7 @@ let Map = class Map extends React.Component {
 	styleLoaded = () => {
 		this.map.addSource('power', {
 			type: 'vector',
-			tiles: ["https://power.kreed.org/tiles/power/{z}/{x}/{y}.pbf"],
+			tiles: [this.props.tileUrl || "https://power.kreed.org/tiles/power/{z}/{x}/{y}.pbf"],
 			minzoom: 0,
 			maxzoom: 16
 		});
@@ -467,8 +467,6 @@ let Map = class Map extends React.Component {
 			html = feature.properties.description;
 		} else {
 			var tags = JSON.parse(p.tags);
-			console.log(p);
-			console.log(tags);
 			html = '<strong>' + (p.name ? p.name : pretty_key(p.kind)) + '</strong>';
 			if (p.voltage) html = html + '<br>Voltage: ' + p.voltage_pretty;
 			for (var key in tags) {
