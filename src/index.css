@@ -25,7 +25,7 @@ html, body, #root, .flex-container {
 	margin: 0;
 	left: 5px;
 	top: 5px;
-	z-index: 1000;
+	z-index: 5;
 }
 .ui.map-control.right {
 	left: auto;
@@ -36,6 +36,12 @@ html, body, #root, .flex-container {
 }
 .ui.inverted .ui.toggle.checkbox label, .ui.inverted .ui.toggle.checkbox input:checked~label {
 	color: white !important;
+}
+.ui.attached.menu.inverted {
+	margin: 0;
+	width: 100%;
+	max-width: 100%;
+	overflow: auto;
 }
 .ui.segment.accordion .title {
 	padding: 0
