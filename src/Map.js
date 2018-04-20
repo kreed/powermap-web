@@ -446,8 +446,8 @@ let Map = class Map extends React.Component {
 
 		this.map.on('click', this.handleClick);
 
-		if (this.props.lines) this.set_show_powerlines(this.props.lines);
-		if (this.props.plants) this.set_show_plants(this.props.plants);
+		if (!this.props.lines) this.set_show_powerlines(this.props.lines);
+		if (!this.props.plants) this.set_show_plants(this.props.plants);
 		if (this.props.rtm) this.set_ercot_rtm(this.props.rtm);
 		if (this.props.onStyleLoad) this.props.onStyleLoad();
 	}
