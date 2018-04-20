@@ -31,9 +31,6 @@ html, body, #root, .flex-container {
 	left: auto;
 	right: 5px;
 }
-.ui.selection.dropdown {
-	min-width: 7em;
-}
 .ui.inverted .ui.toggle.checkbox label, .ui.inverted .ui.toggle.checkbox input:checked~label {
 	color: white !important;
 }
