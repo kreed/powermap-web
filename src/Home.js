@@ -1,75 +1,24 @@
 import React from 'react';
-import { Accordion, Checkbox, Segment, List, Icon } from 'semantic-ui-react'
 import Map from './Map';
+import MapControl from './MapControl';
 
 export default class Home extends React.Component {
 	state = {
-		linesChecked: true,
-		plantsChecked: true,
-		gridChecked: false,
-		rtmChecked: false,
-		settingsOpen: false
+		mapOptions: { lines: true, plants: true, grid: false, rtm: false }
 	}
 
-	componentDidMount() {
-		if (window.matchMedia("(min-width: 500px)").matches) {
-			this.setState({
-				settingsOpen: true
-			});
-		}
-	}
-
-	linesChecked = () => {
-		this.setState(prevState => ({
-			linesChecked: !prevState.linesChecked
-		}));
-	}
-
-	plantsChecked = () => {
-		this.setState(prevState => ({
-			plantsChecked: !prevState.plantsChecked
-		}));
-	}
-
-	gridChecked = () => {
-		this.setState(prevState => ({
-			gridChecked: !prevState.gridChecked
-		}));
-	}
-
-	rtmChecked = () => {
-		this.setState(prevState => ({
-			rtmChecked: !prevState.rtmChecked
-		}));
-	}
-
-	settingsClicked = () => {
-		this.setState(prevState => ({
-			settingsOpen: !prevState.settingsOpen
-		}));
+	mapControlChanged = (option) => {
+		this.setState(prevState => {
+			var opts = {...prevState.mapOptions};
+			opts[option] = !opts[option];
+			return { mapOptions: opts }
+		});
 	}
 
 	render() {
 		return (
-			<Map
-				lines={this.state.linesChecked}
-				plants={this.state.plantsChecked}
-				grid={this.state.gridChecked}
-				rtm={this.state.rtmChecked}>
-				<Accordion as={Segment} inverted className='map-control'>
-					<Accordion.Title index={0} active={this.state.settingsOpen} onClick={this.settingsClicked}>
-						{this.state.settingsOpen ? <Icon name='dropdown' /> : <Icon name='setting' fitted />}
-						{this.state.settingsOpen ? 'Map Settings' : null}
-					</Accordion.Title>
-					<Accordion.Content active={this.state.settingsOpen}>
-						<List celled>
-							<Checkbox as={List.Item} toggle label="Powerlines" checked={this.state.linesChecked} onChange={this.linesChecked} />
-							<Checkbox as={List.Item} toggle label="Power plants" checked={this.state.plantsChecked} onChange={this.plantsChecked} />
-							<Checkbox as={List.Item} toggle label="ERCOT grid" checked={this.state.gridChecked} onChange={this.gridChecked} />
-							<Checkbox as={List.Item} toggle label="ERCOT generators" checked={this.state.rtmChecked} onChange={this.rtmChecked} />
-						</List>
-					</Accordion.Content>
-				</Accordion>
+			<Map options={this.state.mapOptions}>
+				<MapControl className='map-control' options={this.state.mapOptions} onChange={this.mapControlChanged} />
 			</Map>
 		);
 	}

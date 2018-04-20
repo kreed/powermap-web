@@ -46,14 +46,14 @@ let Map = class Map extends React.Component {
 	map;
 
 	componentWillReceiveProps(nextProps) {
-		if (this.props.grid !== nextProps.grid)
-			this.powerline_colors(nextProps.grid)
-		if (this.props.lines !== nextProps.lines)
-			this.set_show_powerlines(nextProps.lines);
-		if (this.props.plants !== nextProps.plants)
-			this.set_show_plants(nextProps.plants);
-		if (this.props.rtm !== nextProps.rtm)
-			this.set_ercot_rtm(nextProps.rtm);
+		if (this.props.options.grid !== nextProps.options.grid)
+			this.powerline_colors(nextProps.options.grid)
+		if (this.props.options.lines !== nextProps.options.lines)
+			this.set_show_powerlines(nextProps.options.lines);
+		if (this.props.options.plants !== nextProps.options.plants)
+			this.set_show_plants(nextProps.options.plants);
+		if (this.props.options.rtm !== nextProps.options.rtm)
+			this.set_ercot_rtm(nextProps.options.rtm);
 	}
 
 	componentDidMount() {
@@ -442,20 +442,20 @@ let Map = class Map extends React.Component {
 		this.powerlines();
 		this.power_hizoom();
 		this.labels();
-		this.powerline_colors(this.props.grid);
+		this.powerline_colors(this.props.options.grid);
 
 		this.map.on('click', this.handleClick);
 
-		if (!this.props.lines) this.set_show_powerlines(this.props.lines);
-		if (!this.props.plants) this.set_show_plants(this.props.plants);
-		if (this.props.rtm) this.set_ercot_rtm(this.props.rtm);
+		if (!this.props.options.lines) this.set_show_powerlines(this.props.options.lines);
+		if (!this.props.options.plants) this.set_show_plants(this.props.options.plants);
+		if (this.props.options.rtm) this.set_ercot_rtm(this.props.options.rtm);
 		if (this.props.onStyleLoad) this.props.onStyleLoad();
 	}
 
 	handleClick = (e) => {
 		var layers = ['substation_point', 'generator_label', 'powerline_label'];
-		if (this.props.plants) layers.push('plant_label');
-		if (this.props.rtm) layers.push('ercot_rtm');
+		if (this.props.options.plants) layers.push('plant_label');
+		if (this.props.options.rtm) layers.push('ercot_rtm');
 		var features = this.map.queryRenderedFeatures(e.point, { layers: layers });
 		if (!features.length)
 			return;

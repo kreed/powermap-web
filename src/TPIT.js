@@ -63,8 +63,7 @@ export default class TPIT extends React.Component {
 	render() {
 		return (
 			<Map ref={el => this.mapComponent = el}
-				lines={true}
-				grid={true}
+				options={{ lines: true, grid: true }}
 				onStyleLoad={this.initStyle} />
 		);
 	}

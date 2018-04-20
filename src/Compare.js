@@ -1,5 +1,6 @@
 import React from 'react'
 import Map from './Map'
+import MapControl from './MapControl';
 import mbglCompare from 'mapbox-gl-compare'
 import { Dropdown } from 'semantic-ui-react'
 
@@ -18,6 +19,7 @@ function yearUrl(year) {
 
 export default class Compare extends React.Component {
 	state = {
+		mapOptions: { lines: true, plants: false, grid: false, rtm: false },
 		leftYear: '2014',
 		rightYear: 'now'
 	}
@@ -43,12 +45,23 @@ export default class Compare extends React.Component {
 		this.mbglcmp = new mbglCompare(this.leftMap.map, this.rightMap.map);
 	}
 
+	mapControlChanged = (option) => {
+		this.setState(prevState => {
+			var opts = {...prevState.mapOptions};
+			opts[option] = !opts[option];
+			return { mapOptions: opts }
+		});
+	}
+
 	render() {
 		return (
 			<div className='compare-container'>
-				<Map ref={el => this.leftMap = el} lines={true} tileUrl={yearUrl(this.state.leftYear)} key={'left' + this.state.leftYear} />
-				<Map ref={el => this.rightMap = el} lines={true} tileUrl={yearUrl(this.state.rightYear)} key={'right' + this.state.rightYear} />
-				<Dropdown className='map-control' compact selection options={yearOptions} onChange={this.leftYear} value={this.state.leftYear} />
+				<Map ref={el => this.leftMap = el} options={this.state.mapOptions} tileUrl={yearUrl(this.state.leftYear)} key={'left' + this.state.leftYear} />
+				<Map ref={el => this.rightMap = el} options={this.state.mapOptions} tileUrl={yearUrl(this.state.rightYear)} key={'right' + this.state.rightYear} />
+				<div className='ui map-control'>
+					<Dropdown compact selection options={yearOptions} onChange={this.leftYear} value={this.state.leftYear} />
+					<MapControl options={this.state.mapOptions} onChange={this.mapControlChanged} />
+				</div>
 				<Dropdown className='map-control right' compact selection options={yearOptions} onChange={this.rightYear} value={this.state.rightYear} />
 			</div>
 		);
