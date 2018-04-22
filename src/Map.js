@@ -27,7 +27,7 @@ var voltage_colors = {
 function pretty_key(str) {
 	if (str === 'plant:source' || str === 'generator:source') return 'Fuel';
 	if (str === 'plant:output:electricity' || str === 'generator:output:electricity') return 'Capacity';
-	return str.replace(/[_:]/, ' ').replace(/^\w/g, l => l.toUpperCase());
+	return str.replace(/[_:]/g, ' ').replace(/^\w/g, l => l.toUpperCase());
 }
 
 function osm_url(feature) {
@@ -101,7 +101,7 @@ let Map = class Map extends React.Component {
 				"text-offset": [0,0],
 				"text-rotation-alignment": "map",
 				"text-anchor": "bottom",
-				"text-field": ["case", ["all", ["has", "cables"], ["has", "voltage_pretty"]], ["concat", ["get", "voltage_pretty"], " (", ["get", "cables"], ")"], ["has", "voltage_pretty"], ["get", "voltage_pretty"], ""]
+				"text-field": ["case", ["all", ["has", "cables"], ["has", "voltage_pretty"]], ["concat", ["get", "voltage_pretty"], " (", ["get", "cables"], ")"], ["to-string", ["get", "voltage_pretty"]]]
 			},
 			"paint": {
 				"text-halo-color": "#fff",
@@ -138,7 +138,7 @@ let Map = class Map extends React.Component {
 				],
 				"symbol-placement": "point",
 				"text-padding": 3,
-				"text-field": ["step", ["zoom"], "", 16, ["concat", ["string", ["get", "name"], ""], " ", ["string", ["get", "capacity_pretty"], ""]]],
+				"text-field": ["step", ["zoom"], "", 16, ["concat", ["to-string", ["get", "name"]], " ", ["to-string", ["get", "capacity_pretty"]]]],
 				"text-letter-spacing": 0.1,
 				"text-max-width": 7,
 				"text-offset": [0, 2.5],
@@ -234,7 +234,7 @@ let Map = class Map extends React.Component {
 				"text-padding": 3,
 				"text-anchor": "left",
 				"icon-image": ["match", ["to-string", ["get", "fuel"]], "coal", "coal", "wind", "wind", "solar", "solar", "hydro", "hydro", "gas", "gas", "nuclear", "nuclear", "unknown_fuel"],
-				"text-field": ["step", ["zoom"], "", 9, ["concat", ["string", ["get", "name"], ""], " ", ["string", ["get", "capacity_pretty"], ""]]],
+				"text-field": ["step", ["zoom"], "", 9, ["concat", ["to-string", ["get", "name"]], " ", ["to-string", ["get", "capacity_pretty"]]]],
 				"text-letter-spacing": 0.1,
 				"text-max-width": 7,
 				"text-offset": [1, 0],
@@ -468,7 +468,7 @@ let Map = class Map extends React.Component {
 		} else {
 			var tags = JSON.parse(p.tags);
 			html = '<strong>' + (p.name ? p.name : pretty_key(p.kind)) + '</strong>';
-			if (p.voltage) html = html + '<br>Voltage: ' + p.voltage_pretty;
+			if (p.voltage_pretty) html = html + '<br>Voltage: ' + p.voltage_pretty;
 			for (var key in tags) {
 				if (['capacity', 'max_voltage', 'voltage', 'voltage_normalized', 'voltage_count', 'name', 'osm_id', 'power', 'way_area', 'barrier'].includes(key)) continue;
 				html = html + '<br>' + pretty_key(key) + ': ' + tags[key];
