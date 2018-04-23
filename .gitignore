@@ -10,6 +10,7 @@
 /build
 /src/semantic.css
 *.tar.xz
+public/*.geojson
 
 # misc
 .DS_Store
