@@ -407,13 +407,11 @@ let Map = class Map extends React.Component {
 			"id": "symbols",
 			"source": "power",
 			"source-layer": "power-point",
-			"filter": [
-				"all",
-				["in", "kind", "pole", "portal", "tower"]
-			],
+			"filter": ["in", "kind", "pole", "portal", "tower", 'compensator', 'transformer', 'converter', 'switch'],
 			"type": "symbol",
 			"layout": {
-				"icon-image": "{kind}"
+				"icon-image": "{kind}",
+				"icon-allow-overlap": true
 			}
 		});
 	}
@@ -453,7 +451,7 @@ let Map = class Map extends React.Component {
 	}
 
 	handleClick = (e) => {
-		var layers = ['substation_point', 'generator_label', 'powerline_label'];
+		var layers = ['substation_point', 'generator_label', 'powerline_label', 'symbols'];
 		if (this.props.options.plants) layers.push('plant_label');
 		if (this.props.options.rtm) layers.push('ercot_rtm');
 		var features = this.map.queryRenderedFeatures(e.point, { layers: layers });
