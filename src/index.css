@@ -43,6 +43,7 @@ html, body, #root, .flex-container {
 	width: 100%;
 	max-width: 100%;
 	overflow: auto;
+	border-radius: 0;
 }
 .ui.segment.accordion .title {
 	padding: 0
