@@ -5,11 +5,11 @@ import mbglCompare from 'mapbox-gl-compare'
 import { Dropdown } from 'semantic-ui-react'
 
 const yearOptions = [
-	{text: '2014', value: '2014'},
-	{text: '2015', value: '2015'},
-	{text: '2016', value: '2016'},
+	{text: 'Now', value: 'now'},
 	{text: '2017', value: '2017'},
-	{text: 'Now', value: 'now'}
+	{text: '2016', value: '2016'},
+	{text: '2015', value: '2015'},
+	{text: '2014', value: '2014'},
 ];
 
 function yearUrl(year) {
