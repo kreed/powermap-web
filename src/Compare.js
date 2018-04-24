@@ -57,14 +57,17 @@ export default class Compare extends React.Component {
 
 	render() {
 		return (
-			<div className='compare-container'>
-				<Map ref={el => this.leftMap = el} options={this.state.mapOptions} tileUrl={yearUrl(this.state.leftYear)} key={'left' + this.state.leftYear} onMapMove={this.props.onMapMove} />
-				<Map ref={el => this.rightMap = el} options={this.state.mapOptions} tileUrl={yearUrl(this.state.rightYear)} key={'right' + this.state.rightYear} />
-				<div className='ui map-control'>
-					<Dropdown compact selection options={yearOptions} onChange={this.leftYear} value={this.state.leftYear} />
-					<MapControl options={this.state.mapOptions} onChange={this.mapControlChanged} />
+			<div className='flex-container'>
+				{this.props.children}
+				<div className='compare-container'>
+					<Map ref={el => this.leftMap = el} options={this.state.mapOptions} tileUrl={yearUrl(this.state.leftYear)} key={'left' + this.state.leftYear} onMapMove={this.props.onMapMove} />
+					<Map ref={el => this.rightMap = el} options={this.state.mapOptions} tileUrl={yearUrl(this.state.rightYear)} key={'right' + this.state.rightYear} />
+					<div className='ui map-control'>
+						<Dropdown compact selection options={yearOptions} onChange={this.leftYear} value={this.state.leftYear} />
+						<MapControl options={this.state.mapOptions} onChange={this.mapControlChanged} />
+					</div>
+					<Dropdown className='map-control right' compact selection options={yearOptions} onChange={this.rightYear} value={this.state.rightYear} />
 				</div>
-				<Dropdown className='map-control right' compact selection options={yearOptions} onChange={this.rightYear} value={this.state.rightYear} />
 			</div>
 		);
 	}

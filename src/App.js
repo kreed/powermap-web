@@ -1,6 +1,5 @@
 import React from 'react';
-import { matchPath } from 'react-router';
-import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom';
+import { BrowserRouter as Router, Route, NavLink, Switch, matchPath } from 'react-router-dom';
 import { Menu, Responsive } from 'semantic-ui-react'
 
 import About from './About';
@@ -16,6 +15,20 @@ const MyNavLink = ({exact, ...rest}) => {
 	return <NavLink activeClassName="active" isActive={isActive} {...rest} />;
 }
 
+const Page = ({as, onMapMove, hash, ...rest}) => {
+	return <Route path="/" render={props => (
+		React.createElement(as, {onMapMove},
+			<Menu inverted compact attached='top'>
+				<Responsive as={Menu.Item} header minWidth={700}>OpenStreetMap power infrastructure</Responsive>
+				<Menu.Item as={MyNavLink} to={'/' + hash} exact>Map</Menu.Item>
+				<Menu.Item as={MyNavLink} to={'/compare' + hash}>Then and now</Menu.Item>
+				<Menu.Item as={MyNavLink} to={'/tpit' + hash}>ERCOT projects</Menu.Item>
+				<Menu.Item as={MyNavLink} to="/about">About</Menu.Item>
+			</Menu>
+		)
+	)} {...rest} />
+}
+
 export default class App extends React.Component {
 	state = {
 		hash: ''
@@ -29,19 +42,12 @@ export default class App extends React.Component {
 
 	render() {
 		return <Router>
-			<div className='flex-container'>
-				<Menu inverted compact attached='top'>
-					<Responsive as={Menu.Item} header minWidth={700}>OpenStreetMap power infrastructure</Responsive>
-					<Menu.Item as={MyNavLink} to={'/' + this.state.hash} exact>Map</Menu.Item>
-					<Menu.Item as={MyNavLink} to={'/compare' + this.state.hash}>Then and now</Menu.Item>
-					<Menu.Item as={MyNavLink} to={'/tpit' + this.state.hash}>ERCOT projects</Menu.Item>
-					<Menu.Item as={MyNavLink} to="/about">About</Menu.Item>
-				</Menu>
-				<Route exact path="/" render={props => ( <Home onMapMove={this.mapMove} /> )} />
-				<Route path="/tpit" render={props => ( <TPIT onMapMove={this.mapMove} /> )} />
-				<Route path="/compare" render={props => ( <Compare onMapMove={this.mapMove} /> )} />
-				<Route path="/about" component={About} />
-			</div>
+			<Switch>
+				<Page exact path="/" as={Home} onMapMove={this.mapMove} hash={this.state.hash} />
+				<Page path="/compare" as={Compare} onMapMove={this.mapMove} hash={this.state.hash} />
+				<Page path="/tpit" as={TPIT} onMapMove={this.mapMove} hash={this.state.hash} />
+				<Page path="/about" as={About} onMapMove={this.mapMove} hash={this.state.hash} />
+			</Switch>
 		</Router>
 	}
 }

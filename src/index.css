@@ -2,16 +2,13 @@ html, body, #root, .flex-container {
 	width: 100%;
 	height: 100%;
 }
-.compare-container {
-	flex-grow: 1;
-	position: relative;
-}
 .flex-container {
 	display: flex;
 	flex-direction: column;
 }
-.mapboxgl-map {
+.flex-container>div:not(.menu) {
 	flex-grow: 1;
+	position: relative;
 }
 .compare-container .mapboxgl-map {
 	position: absolute;
