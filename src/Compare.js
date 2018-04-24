@@ -41,8 +41,10 @@ export default class Compare extends React.Component {
 	}
 
 	componentDidUpdate(prevProps, prevState, snapshot) {
-		this.mbglcmp._container.remove();
-		this.mbglcmp = new mbglCompare(this.leftMap.map, this.rightMap.map);
+		if (prevState.leftYear !== this.state.leftYear || prevState.rightYear !== this.state.rightYear) {
+			this.mbglcmp._container.remove();
+			this.mbglcmp = new mbglCompare(this.leftMap.map, this.rightMap.map);
+		}
 	}
 
 	mapControlChanged = (option) => {
@@ -56,7 +58,7 @@ export default class Compare extends React.Component {
 	render() {
 		return (
 			<div className='compare-container'>
-				<Map ref={el => this.leftMap = el} options={this.state.mapOptions} tileUrl={yearUrl(this.state.leftYear)} key={'left' + this.state.leftYear} />
+				<Map ref={el => this.leftMap = el} options={this.state.mapOptions} tileUrl={yearUrl(this.state.leftYear)} key={'left' + this.state.leftYear} onMapMove={this.props.onMapMove} />
 				<Map ref={el => this.rightMap = el} options={this.state.mapOptions} tileUrl={yearUrl(this.state.rightYear)} key={'right' + this.state.rightYear} />
 				<div className='ui map-control'>
 					<Dropdown compact selection options={yearOptions} onChange={this.leftYear} value={this.state.leftYear} />

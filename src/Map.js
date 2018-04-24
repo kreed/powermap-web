@@ -67,6 +67,7 @@ let Map = class Map extends React.Component {
 		window.map = this.map;
 
 		this.map.on('load', this.styleLoaded);
+		this.map.on('moveend', this.mapMove);
 	}
 
 	render() {
@@ -426,6 +427,10 @@ let Map = class Map extends React.Component {
 				this.map.setPaintProperty(layer, 'line-opacity', show ? 1 : 0);
 			}
 		}
+	}
+
+	mapMove = () => {
+		if (this.props.onMapMove) this.props.onMapMove(this.map._hash.getHashString());
 	}
 
 	styleLoaded = () => {

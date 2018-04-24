@@ -64,6 +64,7 @@ export default class TPIT extends React.Component {
 		return (
 			<Map ref={el => this.mapComponent = el}
 				options={{ lines: true, grid: true }}
+				onMapMove={this.props.onMapMove}
 				onStyleLoad={this.initStyle} />
 		);
 	}
