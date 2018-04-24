@@ -469,7 +469,19 @@ let Map = class Map extends React.Component {
 			if (p.voltage_pretty) html = html + '<br>Voltage: ' + p.voltage_pretty;
 			for (var key in tags) {
 				if (['capacity', 'max_voltage', 'voltage', 'voltage_normalized', 'voltage_count', 'name', 'osm_id', 'power', 'way_area', 'barrier'].includes(key)) continue;
-				html = html + '<br>' + pretty_key(key) + ': ' + tags[key];
+				html += '<br>' + pretty_key(key) + ': ';
+				if (key === 'wikidata') {
+					html += '<a href="https://www.wikidata.org/wiki/' + encodeURIComponent(tags[key]) + '">' + tags[key] + '</a>';
+				} else if (key === 'wikipedia') {
+					var v = tags[key].split(':');
+					var lang = v[0];
+					v = v.slice(1).join(':');
+					html += '<a href="https://' + lang + '.wikipedia.org/wiki/' + encodeURIComponent(v) + '">' + v + '</a>';
+				} else if (key === 'website') {
+					html += '<a href="' + encodeURI(tags[key]) + '">' + tags[key] + '</a>';
+				} else {
+					html += tags[key];
+				}
 			}
 			html = html + '<br>OpenStreetMap ID: <a href="' + osm_url(feature) + '">' + Math.abs(p.osm_id) + '</a>';
 		}
