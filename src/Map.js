@@ -324,12 +324,14 @@ let Map = class Map extends React.Component {
 	}
 
 	powerline_colors(lighten_non_ercot) {
-		function parse_color(c, lighten) {
+		var parse_color = (c, lighten) => {
 			c = parseInt(c.substring(1), 16)
 			var r = (c >> 16) & 0xff;
 			var g = (c >> 8) & 0xff;
 			var b = c & 0xff;
-			if (lighten) {
+			if (lighten && this.props.options.basemap === 'dark') {
+				return 'rgb(' + (r / 2) + ',' + (g / 2)  + ',' + (b / 2) + ')';
+			} else if (lighten) {
 				return 'rgb(' + (r / 2 + 128) + ',' + (g / 2 + 128)  + ',' + (b / 2 + 128) + ')';
 			} else {
 				return 'rgb(' + r + ',' + g + ',' + b + ')';
