@@ -52,6 +52,8 @@ let Map = class Map extends React.Component {
 			this.set_show_powerlines(nextProps.options.lines);
 		if (this.props.options.plants !== nextProps.options.plants)
 			this.set_show_plants(nextProps.options.plants);
+		if (this.props.options.substations !== nextProps.options.substations)
+			this.set_show_substations(nextProps.options.substations);
 		if (this.props.options.rtm !== nextProps.options.rtm)
 			this.set_ercot_rtm(nextProps.options.rtm);
 	}
@@ -80,7 +82,7 @@ let Map = class Map extends React.Component {
 
 	labels() {
 		this.map.addLayer({
-			"id": "powerline_label",
+			"id": "line_label",
 			"type": "symbol",
 			"source": "power",
 			"source-layer": "power-line",
@@ -176,7 +178,7 @@ let Map = class Map extends React.Component {
 			}
 		});
 		this.map.addLayer({
-			"id": "substation label",
+			"id": "substation_label",
 			"type": "symbol",
 			"source": "power",
 			"source-layer": "power-point",
@@ -421,10 +423,15 @@ let Map = class Map extends React.Component {
 		this.map.setLayoutProperty('plant_label', 'visibility', show ? 'visible' : 'none');
 	}
 
+	set_show_substations(show) {
+		this.map.setLayoutProperty('substation_point', 'visibility', show ? 'visible' : 'none');
+		this.map.setLayoutProperty('substation_label', 'visibility', show ? 'visible' : 'none');
+	}
+
 	set_show_powerlines(show) {
 		for (var layer in this.map.style._layers) {
 			if (layer.startsWith('line_')) {
-				this.map.setPaintProperty(layer, 'line-opacity', show ? 1 : 0);
+				this.map.setLayoutProperty(layer, 'visibility', show ? 'visible' : 'none');
 			}
 		}
 	}
@@ -451,12 +458,15 @@ let Map = class Map extends React.Component {
 
 		if (!this.props.options.lines) this.set_show_powerlines(this.props.options.lines);
 		if (!this.props.options.plants) this.set_show_plants(this.props.options.plants);
+		if (!this.props.options.substations) this.set_show_substations(this.props.options.substations);
 		if (this.props.options.rtm) this.set_ercot_rtm(this.props.options.rtm);
 		if (this.props.onStyleLoad) this.props.onStyleLoad();
 	}
 
 	handleClick = (e) => {
-		var layers = ['substation_point', 'generator_label', 'powerline_label', 'symbols'];
+		var layers = ['generator_label', 'symbols'];
+		if (this.props.options.lines) layers.push('line_label');
+		if (this.props.options.substations) layers.push('substation_point');
 		if (this.props.options.plants) layers.push('plant_label');
 		if (this.props.options.rtm) layers.push('ercot_rtm');
 		var features = this.map.queryRenderedFeatures(e.point, { layers: layers });

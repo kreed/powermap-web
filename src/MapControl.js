@@ -29,8 +29,9 @@ export default class MapControl extends React.Component {
 				</Accordion.Title>
 				<Accordion.Content active={this.state.open}>
 					<List celled>
-						<Checkbox as={List.Item} toggle label="Powerlines" checked={this.props.options.lines} onChange={()=>{ this.props.onChange('lines')}} />
-						<Checkbox as={List.Item} toggle label="Power plants" checked={this.props.options.plants} onChange={()=>{this.props.onChange('plants')}} />
+						<Checkbox as={List.Item} toggle label="Lines" checked={this.props.options.lines} onChange={()=>{ this.props.onChange('lines')}} />
+						<Checkbox as={List.Item} toggle label="Plants" checked={this.props.options.plants} onChange={()=>{this.props.onChange('plants')}} />
+						<Checkbox as={List.Item} toggle label="Substations" checked={this.props.options.substations} onChange={()=>{this.props.onChange('substations')}} />
 						<Checkbox as={List.Item} toggle label="ERCOT grid" checked={this.props.options.grid} onChange={()=>{this.props.onChange('grid')}} />
 						<Checkbox as={List.Item} toggle label="ERCOT generators" checked={this.props.options.rtm} onChange={()=>{this.props.onChange('rtm')}} />
 					</List>

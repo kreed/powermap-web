@@ -19,7 +19,7 @@ function yearUrl(year) {
 
 export default class Compare extends React.Component {
 	state = {
-		mapOptions: { lines: true, plants: false, grid: false, rtm: false },
+		mapOptions: { lines: true, substations: true, plants: false, grid: false, rtm: false },
 		leftYear: '2014',
 		rightYear: 'now'
 	}
