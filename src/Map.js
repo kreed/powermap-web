@@ -43,7 +43,7 @@ function osm_url(feature) {
 }
 
 let Map = class Map extends React.Component {
-	map;
+	static defaults = { basemap: 'light', lines: true, plants: true, substations: true, grid: false, rtm: false }
 
 	componentWillReceiveProps(nextProps) {
 		if (this.props.options.grid !== nextProps.options.grid)
@@ -67,7 +67,7 @@ let Map = class Map extends React.Component {
 
 		this.map = new mapboxgl.Map({
 			container: this.mapContainer,
-			style: styles[this.props.options.basemap || 'light'],
+			style: styles[this.props.options.basemap],
 			hash: true,
 			center: [-98.34, 30.55],
 			zoom: 6

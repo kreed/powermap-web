@@ -4,7 +4,7 @@ import MapControl from './MapControl';
 
 export default class Home extends React.Component {
 	state = {
-		mapOptions: { basemap: 'light', lines: true, plants: true, substations: true, grid: false, rtm: false }
+		mapOptions: { ...Map.defaults },
 	}
 
 	render() {

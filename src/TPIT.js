@@ -65,7 +65,7 @@ export default class TPIT extends React.Component {
 			<div className='flex-container'>
 				{this.props.children}
 				<Map ref={el => this.mapComponent = el}
-					options={{ lines: true, grid: true, substations: true }}
+					options={{ ...Map.defaults, grid: true }}
 					onMapMove={this.props.onMapMove}
 					onStyleLoad={this.initStyle} />
 			</div>
