@@ -4,23 +4,15 @@ import MapControl from './MapControl';
 
 export default class Home extends React.Component {
 	state = {
-		mapOptions: { lines: true, plants: true, substations: true, grid: false, rtm: false }
-	}
-
-	mapControlChanged = (option) => {
-		this.setState(prevState => {
-			var opts = {...prevState.mapOptions};
-			opts[option] = !opts[option];
-			return { mapOptions: opts }
-		});
+		mapOptions: { basemap: 'light', lines: true, plants: true, substations: true, grid: false, rtm: false }
 	}
 
 	render() {
 		return (
 			<div className='flex-container'>
 				{this.props.children}
-				<Map options={this.state.mapOptions} onMapMove={this.props.onMapMove}>
-					<MapControl className='map-control' options={this.state.mapOptions} onChange={this.mapControlChanged} />
+				<Map options={this.state.mapOptions} onMapMove={this.props.onMapMove} key={this.state.mapOptions.basemap}>
+					<MapControl className='map-control' options={this.state.mapOptions} onChange={MapControl.mapControlChanged.bind(this)} />
 				</Map>
 			</div>
 		);

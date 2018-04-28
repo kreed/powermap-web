@@ -59,9 +59,15 @@ let Map = class Map extends React.Component {
 	}
 
 	componentDidMount() {
+		const styles = {
+			light: 'mapbox://styles/kre3d/cjful4l500mjb2smihw06awcc?optimize=true',
+			dark: 'mapbox://styles/kre3d/cjgiv7v8t001j2so0qst1ky5k?optimize=true',
+			sat: 'mapbox://styles/kre3d/cjgivayq3001w2sqgwycfluhi',
+		}
+
 		this.map = new mapboxgl.Map({
 			container: this.mapContainer,
-			style: 'mapbox://styles/kre3d/cjful4l500mjb2smihw06awcc?optimize=true',
+			style: styles[this.props.options.basemap || 'light'],
 			hash: true,
 			center: [-98.34, 30.55],
 			zoom: 6

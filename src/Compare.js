@@ -19,7 +19,7 @@ function yearUrl(year) {
 
 export default class Compare extends React.Component {
 	state = {
-		mapOptions: { lines: true, substations: true, plants: false, grid: false, rtm: false },
+		mapOptions: { basemap: 'light', lines: true, substations: true, plants: false, grid: false, rtm: false },
 		leftYear: '2014',
 		rightYear: 'now'
 	}
@@ -41,18 +41,10 @@ export default class Compare extends React.Component {
 	}
 
 	componentDidUpdate(prevProps, prevState, snapshot) {
-		if (prevState.leftYear !== this.state.leftYear || prevState.rightYear !== this.state.rightYear) {
+		if (prevState.leftYear !== this.state.leftYear || prevState.rightYear !== this.state.rightYear || prevState.mapOptions.basemap !== this.state.mapOptions.baseMap) {
 			this.mbglcmp._container.remove();
 			this.mbglcmp = new mbglCompare(this.leftMap.map, this.rightMap.map);
 		}
-	}
-
-	mapControlChanged = (option) => {
-		this.setState(prevState => {
-			var opts = {...prevState.mapOptions};
-			opts[option] = !opts[option];
-			return { mapOptions: opts }
-		});
 	}
 
 	render() {
@@ -60,11 +52,11 @@ export default class Compare extends React.Component {
 			<div className='flex-container'>
 				{this.props.children}
 				<div className='compare-container'>
-					<Map ref={el => this.leftMap = el} options={this.state.mapOptions} tileUrl={yearUrl(this.state.leftYear)} key={'left' + this.state.leftYear} onMapMove={this.props.onMapMove} />
-					<Map ref={el => this.rightMap = el} options={this.state.mapOptions} tileUrl={yearUrl(this.state.rightYear)} key={'right' + this.state.rightYear} />
+					<Map ref={el => this.leftMap = el} options={this.state.mapOptions} tileUrl={yearUrl(this.state.leftYear)} key={'left' + this.state.leftYear + this.state.mapOptions.basemap} onMapMove={this.props.onMapMove} />
+					<Map ref={el => this.rightMap = el} options={this.state.mapOptions} tileUrl={yearUrl(this.state.rightYear)} key={'right' + this.state.rightYear + this.state.mapOptions.basemap} />
 					<div className='ui map-control'>
 						<Dropdown compact selection options={yearOptions} onChange={this.leftYear} value={this.state.leftYear} />
-						<MapControl options={this.state.mapOptions} onChange={this.mapControlChanged} />
+						<MapControl options={this.state.mapOptions} onChange={MapControl.mapControlChanged.bind(this)} />
 					</div>
 					<Dropdown className='map-control right' compact selection options={yearOptions} onChange={this.rightYear} value={this.state.rightYear} />
 				</div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Accordion, Checkbox, Segment, List, Icon } from 'semantic-ui-react'
+import { Accordion, Button, Checkbox, Segment, List, Icon } from 'semantic-ui-react'
 
 export default class MapControl extends React.Component {
 	state = {
@@ -20,7 +20,20 @@ export default class MapControl extends React.Component {
 		}));
 	}
 
+	static mapControlChanged(option, v) {
+		this.setState(prevState => {
+			var opts = {...prevState.mapOptions};
+			if (option === 'basemap') {
+				opts[option] = v;
+			} else {
+				opts[option] = !opts[option];
+			}
+			return { mapOptions: opts }
+		});
+	}
+
 	render() {
+		var opts = this.props.options;
 		return (
 			<Accordion as={Segment} inverted className={this.props.className}>
 				<Accordion.Title index={0} active={this.state.open} onClick={this.openClose}>
@@ -29,12 +42,17 @@ export default class MapControl extends React.Component {
 				</Accordion.Title>
 				<Accordion.Content active={this.state.open}>
 					<List celled>
-						<Checkbox as={List.Item} toggle label="Lines" checked={this.props.options.lines} onChange={()=>{ this.props.onChange('lines')}} />
-						<Checkbox as={List.Item} toggle label="Plants" checked={this.props.options.plants} onChange={()=>{this.props.onChange('plants')}} />
-						<Checkbox as={List.Item} toggle label="Substations" checked={this.props.options.substations} onChange={()=>{this.props.onChange('substations')}} />
-						<Checkbox as={List.Item} toggle label="ERCOT grid" checked={this.props.options.grid} onChange={()=>{this.props.onChange('grid')}} />
-						<Checkbox as={List.Item} toggle label="ERCOT generators" checked={this.props.options.rtm} onChange={()=>{this.props.onChange('rtm')}} />
+						<Checkbox as={List.Item} toggle label="Lines" checked={opts.lines} onChange={()=>{ this.props.onChange('lines')}} />
+						<Checkbox as={List.Item} toggle label="Substations" checked={opts.substations} onChange={()=>{this.props.onChange('substations')}} />
+						<Checkbox as={List.Item} toggle label="Plants" checked={opts.plants} onChange={()=>{this.props.onChange('plants')}} />
+						<Checkbox as={List.Item} toggle label="ERCOT grid" checked={opts.grid} onChange={()=>{this.props.onChange('grid')}} />
+						<Checkbox as={List.Item} toggle label="ERCOT generators" checked={opts.rtm} onChange={()=>{this.props.onChange('rtm')}} />
 					</List>
+					<Button.Group>
+						<Button inverted active={opts.basemap==='light'} onClick={()=>{this.props.onChange('basemap', 'light')}}>Light</Button>
+						<Button inverted active={opts.basemap==='dark'} onClick={()=>{this.props.onChange('basemap', 'dark')}}>Dark</Button>
+						<Button inverted active={opts.basemap==='sat'} onClick={()=>{this.props.onChange('basemap', 'sat')}}>Satellite</Button>
+					</Button.Group>
 				</Accordion.Content>
 			</Accordion>
 		);
