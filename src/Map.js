@@ -36,7 +36,7 @@ function osm_url(feature) {
 	if (id < 0) {
 		id = -id;
 		type = 'relation';
-	} else if (feature.properties.label_placement === 'false') {
+	} else if (feature.properties.label_placement === false) {
 		type = 'node';
 	}
 	return '//www.openstreetmap.org/' + type + '/' + id;
