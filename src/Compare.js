@@ -41,7 +41,7 @@ export default class Compare extends React.Component {
 	}
 
 	componentDidUpdate(prevProps, prevState, snapshot) {
-		if (prevState.leftYear !== this.state.leftYear || prevState.rightYear !== this.state.rightYear || prevState.mapOptions.basemap !== this.state.mapOptions.baseMap) {
+		if (prevState.leftYear !== this.state.leftYear || prevState.rightYear !== this.state.rightYear || prevState.mapOptions.basemap !== this.state.mapOptions.basemap) {
 			this.mbglcmp._container.remove();
 			this.mbglcmp = new mbglCompare(this.leftMap.map, this.rightMap.map);
 		}
