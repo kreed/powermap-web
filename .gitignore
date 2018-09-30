@@ -8,7 +8,6 @@
 
 # build output
 /build
-/src/semantic.css
 *.tar.xz
 public/*.geojson
 
