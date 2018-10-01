@@ -6,6 +6,7 @@ import { Dropdown } from 'semantic-ui-react'
 
 const yearOptions = [
 	{text: 'Now', value: 'now'},
+	{text: '2018', value: '2018'},
 	{text: '2017', value: '2017'},
 	{text: '2016', value: '2016'},
 	{text: '2015', value: '2015'},
