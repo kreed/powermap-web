@@ -46,7 +46,7 @@ export default class TPIT extends React.Component {
 
 				for (var i = 0; i < projects.length; ++i) {
 					var p = projects[i];
-					var rows = [p.title, p.transmission_owner, p.sheet_date, p.projected_in_service, p.sheet_status];
+					var rows = [p.title, p.transmission_owner, p.first_seen, p.last_seen, p.projected_in_service, p.sheet_status];
 					html += '<tr title="' + p.description + '"><td>' + rows.join('</td><td>') + '</td></tr>';
 				}
 
