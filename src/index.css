@@ -45,3 +45,9 @@ html, body, #root, .flex-container {
 .ui.segment.accordion .title {
 	padding: 0
 }
+.mapboxgl-popup {
+	max-height: 40%;
+}
+.mapboxgl-popup-content {
+	overflow-y: auto;
+}
